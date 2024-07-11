@@ -3,12 +3,20 @@ import numpy as np
 
 def load_data():
     # Load the data
-    data = pd.read_csv('Samples_info.csv')
+    data = pd.read_csv('Samples_info_numeric.csv', header=0, index_col=0)
     return data
 
 
 df = load_data()
-#how to add a label to the columns? answer: df.columns = ['Sample', 'R1', 'R2', 'Ester', '001.flexbar', 'q.fastq']
-df.columns = ['Sample', 'Time_taken', 'Treatment','Sex','Place_taken', 'Sample_id']
+# Replace values in specific columns
+df['Sex'].replace('M', 1, inplace=True)
+df['Sex'].replace('F', 0, inplace=True)
 
-df.to_csv('Samples_info.csv', index=False)
+df['Treatment'].replace('LPS', 1, inplace=True)
+df['Treatment'].replace('CNT', 0, inplace=True)
+
+df['Time_taken'].replace('24h', 24, inplace=True)
+df['Time_taken'].replace('4h', 4, inplace=True)
+df['Time_taken'].replace('7d', 168, inplace=True)
+
+df.to_csv('Samples_info_numeric.csv', index=False)
