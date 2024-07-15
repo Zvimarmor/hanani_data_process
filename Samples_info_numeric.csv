@@ -1,4 +1,4 @@
-Sample_ID,Time_taken,Treatment,Sex (M/F),Place_taken,Sample_num
+Sample_ID,Time_taken,Treatment,Sex,Place_taken,Sample_num
 Ester_24h_CNT_F_S_S6_R1_001.flexbar_q.fastq,24,0,0,S,6
 Ester_24h_CNT_F_T_S29_R1_001.flexbar_q.fastq,24,0,0,T,29
 Ester_24h_CNT_F_T_S30_R1_001.flexbar_q.fastq,24,0,0,T,30

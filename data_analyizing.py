@@ -3,67 +3,130 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, StandardScaler
+
+#######Data Preprocessing########
 
 # Read in the data
-ColData = pd.read_csv('Samples_info_numeric.csv', header=0, index_col=0)
+ColData = pd.read_csv('Samples_info.csv', header=0, index_col=0)
 CountsDataFrame = pd.read_csv('tRNA_Exclusive_Combined_data.csv', header=0, index_col=0)
 
 # Filter out rows where sum > 2
 CountsDataFrame = CountsDataFrame[CountsDataFrame.sum(axis=1) > 2]
 
 # Transpose the data frame for PCA
-pcaData1 = CountsDataFrame.transpose()
+Hanani_proccessed_data = CountsDataFrame.T
 
 # Add sample IDs as a column
-pcaData1['Sample_ID'] = pcaData1.index
+Hanani_proccessed_data['Sample_ID'] = Hanani_proccessed_data.index
 
 # Merge with sample information
-pcaData1 = pd.merge(pcaData1, ColData, left_on='Sample_ID', right_index=True)
+Hanani_proccessed_data = pd.merge(Hanani_proccessed_data, ColData, left_on='Sample_ID', right_index=True)
 
 # Set index to Sample_ID
-pcaData1.set_index('Sample_ID', inplace=True)
+Hanani_proccessed_data.set_index('Sample_ID', inplace=True)
 
 # Remove non-numeric columns for PCA
-non_numeric_columns = ['Place_taken']
-# non_numeric_columns = ['Time_taken','Treatment','Sex','Place_taken','Sample_num']  # Add other non-numeric column names here if needed
-numeric_columns = [col for col in pcaData1.columns if col not in non_numeric_columns]
+non_numeric_columns = ['Time_taken', 'Treatment', 'Sex', 'Place_taken', 'Sample_num']
+numeric_columns = [col for col in Hanani_proccessed_data.columns if col not in non_numeric_columns]
 
-# Perform PCA
-pca = PCA(n_components=4, whiten=True)
-pca_transformed = pca.fit_transform(pcaData1[numeric_columns])
 
-# Perform t-SNE
-tsne = TSNE(n_components=2, perplexity=30, random_state=42)
-tsne_transformed = tsne.fit_transform(pcaData1[numeric_columns])
+#######Plotting########
 
-# Encode the 'Time_taken' column to numeric labels
-label_encoder = LabelEncoder()
-pcaData1['Treatment'] = label_encoder.fit_transform(pcaData1['Treatment'])
+def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(data[:, x], data[:, y], c=labels, cmap='viridis')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    # Create a legend
+    unique_labels = np.unique(labels)
+    handles = [plt.Line2D([0], [0], marker='o', color='w', label=label_mapping[label], 
+                          markersize=10, markerfacecolor=plt.cm.viridis(i / max(unique_labels))) 
+               for i, label in enumerate(unique_labels)]
+    plt.legend(handles = handles, title='Treatment & Time Taken', loc='best')
+    plt.show()
+    plt.close()
 
-# Plot PCA results
-fig, axs = plt.subplots(1, 3, figsize=(18, 6))
 
-# Plot first vs. second principal component from PCA
-scatter1 = axs[0].scatter(pca_transformed[:, 0], pca_transformed[:, 1], c=pcaData1['Treatment'], cmap='viridis')
-axs[0].set_xlabel('PC1')
-axs[0].set_ylabel('PC2')
-axs[0].set_title('PCA: PC1 vs PC2')
-plt.colorbar(scatter1, ax=axs[0], label="Time taken")
 
-# Plot third vs. fourth principal component from PCA
-scatter2 = axs[1].scatter(pca_transformed[:, 2], pca_transformed[:, 3], c=pcaData1['Treatment'], cmap='viridis')
-axs[1].set_xlabel('PC3')
-axs[1].set_ylabel('PC4')
-axs[1].set_title('PCA: PC3 vs PC4')
-plt.colorbar(scatter2, ax=axs[1], label="Time taken")
+#######PCA, TSNE, LDA########
 
-# Plot t-SNE results
-scatter3 = axs[2].scatter(tsne_transformed[:, 0], tsne_transformed[:, 1], c=pcaData1['Treatment'], cmap='viridis')
-axs[2].set_xlabel('t-SNE Component 1')
-axs[2].set_ylabel('t-SNE Component 2')
-axs[2].set_title('t-SNE')
-plt.colorbar(scatter3, ax=axs[2], label="Time taken")
+# # Perform PCA
+# pca = PCA(n_components=4, whiten=True)
+# pca_transformed = pca.fit_transform(Hanani_proccessed_data[numeric_columns])
 
-plt.tight_layout()
+# # Perform t-SNE
+# tsne = TSNE(n_components=2, perplexity=30, random_state=42)
+# tsne_transformed = tsne.fit_transform(Hanani_proccessed_data[numeric_columns])
+
+# # Create a combined label for Treatment, Sex, and Place_taken
+# Hanani_proccessed_data['Combined_Label'] = Hanani_proccessed_data['Treatment'].astype(str) + '&' + Hanani_proccessed_data['Time_taken'].astype(str)
+
+# # Encode combined labels
+# combined_label_encoder = LabelEncoder()
+# Hanani_proccessed_data['Combined_Label'] = combined_label_encoder.fit_transform(Hanani_proccessed_data['Combined_Label'])
+
+# # perform LDA on the data
+# from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+# lda = LinearDiscriminantAnalysis(n_components=2)
+# lda_transformed = lda.fit_transform(Hanani_proccessed_data[numeric_columns], Hanani_proccessed_data['Combined_Label'])
+
+# # Get the mapping from encoded labels to original combined labels
+# label_mapping = dict(zip(Hanani_proccessed_data['Combined_Label'], Hanani_proccessed_data['Combined_Label'].astype(str) ))
+
+
+
+#######K means clustering########
+from sklearn.cluster import KMeans
+
+# Mapping dictionary
+time_mapping = {'4h': 4,'24h': 24, '7d': 7 * 24 }
+Sex_mapping = {'M': 0, 'F': 1}
+Treatment_mapping = {'CNT': 0, 'LPS': 1}
+Place_taken_mapping = {'S': 0, 'T': 1}
+
+# Convert the column using map
+Hanani_proccessed_data['Time_taken'] = Hanani_proccessed_data['Time_taken'].map(time_mapping)
+Hanani_proccessed_data['Sex'] = Hanani_proccessed_data['Sex'].map(Sex_mapping)
+Hanani_proccessed_data['Treatment'] = Hanani_proccessed_data['Treatment'].map(Treatment_mapping)
+Hanani_proccessed_data['Place_taken'] = Hanani_proccessed_data['Place_taken'].map(Place_taken_mapping)
+Hanani_proccessed_data['Sample_num'] = Hanani_proccessed_data['Sample_num'].str.replace('S', '')
+
+# Apply K-means clustering
+kmeans = KMeans(n_clusters=3)
+kmeans.fit(Hanani_proccessed_data)
+
+labels = kmeans.labels_
+centroids = kmeans.cluster_centers_
+Hanani_proccessed_data['Cluster'] = labels
+
+# Add jitter to the data points
+jitter_strength = 0.1
+jittered_time_taken = Hanani_proccessed_data['Place_taken'] + np.random.uniform(-jitter_strength, jitter_strength, Hanani_proccessed_data.shape[0])
+jittered_treatment = Hanani_proccessed_data['Cluster'] + np.random.uniform(-jitter_strength, jitter_strength, Hanani_proccessed_data.shape[0])
+
+# Plotting
+plt.figure(figsize=(18, 8))
+plt.scatter(jittered_time_taken, jittered_treatment, c=Hanani_proccessed_data['Treatment'], cmap='viridis', s=100, alpha=0.6)
+plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='x', s=50, linewidths=2)
+plt.xlabel('Time_taken')
+plt.ylabel('Cluster')
+plt.title('K-means Clustering with Jitter')
 plt.show()
+
+
+# # Plot first vs. second principal component from PCA
+# plot_with_legend(pca_transformed, 0, 1, Hanani_proccessed_data['Combined_Label'], 'PCA: PC1 vs PC2', 'PC1', 'PC2', label_mapping)
+
+# # Plot third vs. fourth principal component from PCA
+# plot_with_legend(pca_transformed, 2, 3, Hanani_proccessed_data['Combined_Label'], 'PCA: PC3 vs PC4', 'PC3', 'PC4', label_mapping)
+
+# # Plot t-SNE results
+# plot_with_legend(tsne_transformed, 0, 1, Hanani_proccessed_data['Combined_Label'], 't-SNE', 't-SNE 1', 't-SNE 2', label_mapping)
+
+# # Plot LDA results
+# plot_with_legend(lda_transformed, 0, 1, Hanani_proccessed_data['Combined_Label'], 'LDA', 'LDA 1', 'LDA 2', label_mapping)
+
+# Plot K-means clustering results
+# plot_with_legend(Hanani_proccessed_data[numeric_columns].values, 0, 1, Hanani_proccessed_data['Cluster'], 'K-means Clustering', 'PC1', 'PC2', {})

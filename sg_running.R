@@ -9,7 +9,7 @@ library(MASS)
 ColData <- read.csv('Samples_info.csv', header = TRUE, row.names = 1)
 CountsDataFrame <- read.csv("tRNA_Exclusive_Combined_data.csv", header = TRUE, row.names = 1)
 
-CountsDataFrame<-CountsDataFrame[rowSums(CountsDataFrame)>0,]
+CountsDataFrame<-CountsDataFrame[rowSums(CountsDataFrame)>2,]
 # Assign temporary variable names for counts data and processed column data
 tmp1 <- CountsDataFrame
 pcaData1 <- as.data.frame(t(tmp1))
@@ -17,18 +17,18 @@ pcaData1 <- as.data.frame(t(tmp1))
 # Add sample IDs as a column
 pcaData1$Sample_ID <- rownames(pcaData1) # change 'Sample_ID' to the name of your sample ID column
 ColData$Sample_ID <- rownames(ColData)
-print(ColData$Sample_ID)
 
 pcaData1 <- merge(pcaData1, ColData, by = "Sample_ID")
 
 # Set row names to sample IDs
 rownames(pcaData1) <- pcaData1$Sample_ID
 
+
 # Perform PCA on the processed data
 pca_res1 <- prcomp(pcaData1[2:ncol(tmp1)], scale = TRUE)
 
 # Specify the parameter for labeling the PCA plot
-c <- "Treatment"
+c <- "Time_taken" 
 
 # Plot PCA results for the first two principal components
 autoplot(pca_res1, x = 1, y = 2, data = pcaData1, colour = c, label = F, size = 3)
@@ -57,7 +57,7 @@ cold1 <- cold1[order(cold1$Sample_ID),]
 nrow(cold1) == sum(cold1$Sample_ID == colnames(cts))
 
 # Create DGEList object for differential expression analysis
-y <- DGEList(counts = cts, group = cold1$Sample_disease) # change 'condition' to the name of your condition column
+y <- DGEList(counts = cts, group = cold1$Treatment) # change 'condition' to the name of your condition column
 
 # Filter genes by expression
 keep <- filterByExpr(y)
