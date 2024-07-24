@@ -73,7 +73,7 @@ y <- calcNormFactors(y)
 cts1 <- as.data.frame(cpm(y, log = FALSE))
 
 # Create model matrix for differential expression analysis
-dsgn <- model.matrix( ~Sample_disease, data = cold1)
+dsgn <- model.matrix( ~Treatment, data = cold1)
 
 # Estimate dispersions
 y <- estimateDisp(y, dsgn, robust = TRUE)
