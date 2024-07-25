@@ -147,52 +147,52 @@ centroids = kmeans.cluster_centers_
 Hanani_proccessed_data['kmeans_cluster'] = labels
 
 # Plotting K-means clustering results
-#plot_cluster(0, 1, 'K-means Clustering', 'PC1', 'PC2', labels=Hanani_proccessed_data['kmeans_cluster'])
-#print_cluster_info(Hanani_proccessed_data, labels, 'kmeans_cluster')
+plot_cluster(0, 1, 'K-means Clustering', 'PC1', 'PC2', labels=Hanani_proccessed_data['kmeans_cluster'])
+print_cluster_info(Hanani_proccessed_data, labels, 'kmeans_cluster')
 
 #######Spectral Clustering########
-from sklearn.cluster import SpectralClustering
+# from sklearn.cluster import SpectralClustering
 
-# Initialize SpectralClustering
-spectral = SpectralClustering(n_clusters=3, affinity='nearest_neighbors', random_state=0)
-spectral_labels = spectral.fit_predict(Hanani_proccessed_data[numeric_columns])
+# # Initialize SpectralClustering
+# spectral = SpectralClustering(n_clusters=3, affinity='nearest_neighbors', random_state=0)
+# spectral_labels = spectral.fit_predict(Hanani_proccessed_data[numeric_columns])
 
-# Add SpectralClustering labels to the data
-Hanani_proccessed_data['Spectral_Cluster'] = spectral_labels
+# # Add SpectralClustering labels to the data
+# Hanani_proccessed_data['Spectral_Cluster'] = spectral_labels
 
-# Plotting Spectral Clustering results
-plot_cluster(Hanani_proccessed_data['Spectral_Cluster'],Hanani_proccessed_data['Time_taken'], 'Spectral Clustering', 'Spectral Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Spectral_Cluster'], 'Spectral_Cluster')
+# # Plotting Spectral Clustering results
+# plot_cluster(Hanani_proccessed_data['Spectral_Cluster'],Hanani_proccessed_data['Time_taken'], 'Spectral Clustering', 'Spectral Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Spectral_Cluster'], 'Spectral_Cluster')
 
-#######Agglomerative Clustering########
-from sklearn.cluster import AgglomerativeClustering
+# #######Agglomerative Clustering########
+# from sklearn.cluster import AgglomerativeClustering
 
-# Initialize AgglomerativeClustering
-agg_clustering = AgglomerativeClustering(n_clusters=3, linkage='ward')
+# # Initialize AgglomerativeClustering
+# agg_clustering = AgglomerativeClustering(n_clusters=3, linkage='ward')
 
-# Fit the model
-agg_labels = agg_clustering.fit_predict(Hanani_proccessed_data[numeric_columns])
+# # Fit the model
+# agg_labels = agg_clustering.fit_predict(Hanani_proccessed_data[numeric_columns])
 
-# Add AgglomerativeClustering labels to the data
-Hanani_proccessed_data['Agglomerative_Cluster'] = agg_labels
+# # Add AgglomerativeClustering labels to the data
+# Hanani_proccessed_data['Agglomerative_Cluster'] = agg_labels
 
-# Plotting Agglomerative Clustering results
-plot_cluster(Hanani_proccessed_data['Agglomerative_Cluster'],Hanani_proccessed_data['Time_taken'], 'Agglomerative Clustering', 'Agglomerative Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Agglomerative_Cluster'], 'Agglomerative_Cluster')
+# # Plotting Agglomerative Clustering results
+# plot_cluster(Hanani_proccessed_data['Agglomerative_Cluster'],Hanani_proccessed_data['Time_taken'], 'Agglomerative Clustering', 'Agglomerative Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Agglomerative_Cluster'], 'Agglomerative_Cluster')
 
-#######Hierarchical Clustering########
-from scipy.cluster.hierarchy import linkage, fcluster
-import scipy.cluster.hierarchy as sch
+# #######Hierarchical Clustering########
+# from scipy.cluster.hierarchy import linkage, fcluster
+# import scipy.cluster.hierarchy as sch
 
-# Compute the linkage matrix
-Z = linkage(Hanani_proccessed_data[numeric_columns], method='ward')
+# # Compute the linkage matrix
+# Z = linkage(Hanani_proccessed_data[numeric_columns], method='ward')
 
-# Form clusters
-hierarchical_labels = fcluster(Z, t=3, criterion='maxclust')
+# # Form clusters
+# hierarchical_labels = fcluster(Z, t=3, criterion='maxclust')
 
-# Add Hierarchical labels to the data
-Hanani_proccessed_data['Hierarchical_Cluster'] = hierarchical_labels
+# # Add Hierarchical labels to the data
+# Hanani_proccessed_data['Hierarchical_Cluster'] = hierarchical_labels
 
-# Plotting Hierarchical Clustering results
-plot_cluster(Hanani_proccessed_data['Hierarchical_Cluster'],Hanani_proccessed_data['Time_taken'], 'Hierarchical Clustering', 'Hierarchical Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Hierarchical_Cluster'], 'Hierarchical_Cluster')
+# # Plotting Hierarchical Clustering results
+# plot_cluster(Hanani_proccessed_data['Hierarchical_Cluster'],Hanani_proccessed_data['Time_taken'], 'Hierarchical Clustering', 'Hierarchical Cluster', 'Time Taken', labels=Hanani_proccessed_data['Treatment'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Hierarchical_Cluster'], 'Hierarchical_Cluster')

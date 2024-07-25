@@ -4,7 +4,7 @@ library(ggfortify)
 library(biomaRt)
 library(matrixStats)
 library(MASS)
-#setwd("/Users/zvimarmor/university_second_year/hanani_data_process")
+setwd("/Users/zvimarmor/university_second_year/hanani_data_process")
 
 ColData <- read.csv('Samples_info.csv', header = TRUE, row.names = 1)
 CountsDataFrame <- read.csv("tRNA_Exclusive_Combined_data.csv", header = TRUE, row.names = 1)
@@ -36,8 +36,11 @@ autoplot(pca_res1, x = 1, y = 2, data = pcaData1, colour = c, label = F, size = 
 # Plot PCA results for the third and fourth principal components
 autoplot(pca_res1, x = 3, y = 4, data = pcaData1, colour = c, label = F, size = 3)
 
+toRemove<-c() 
+for(g in rownames(CountsDataFrame)){
+  if(quantile(as.numeric(CountsDataFrame[g,]),prob=0.95)<mean(as.numeric(CountsDataFrame[g,]))){toRemove<-append(toRemove,g)}}
 # Assign counts data to a variable
-cts <- CountsDataFrame
+cts <- CountsDataFrame[!rownames(CountsDataFrame) %in% toRemove,]
 
 # Assign column data to a variable
 cold1 <- ColData
@@ -72,8 +75,10 @@ y <- calcNormFactors(y)
 # Create normalized counts matrix
 cts1 <- as.data.frame(cpm(y, log = FALSE))
 
+write.csv(cts1, file = "cpm_all_samples.csv", row.names = TRUE)
+
 # Create model matrix for differential expression analysis
-dsgn <- model.matrix( ~Treatment, data = cold1)
+dsgn <- model.matrix( ~Time_taken+Sex+Place_taken+Treatment, data = cold1)
 
 # Estimate dispersions
 y <- estimateDisp(y, dsgn, robust = TRUE)
@@ -88,11 +93,28 @@ head(dsgn)
 
 # Change the coefficient to the coefficient that interests you (the number of the column in the design matrix)
 fit <- glmQLFit(y, dsgn, robust = TRUE)
-lrt1 <- glmLRT(fit, coef = 2)
+lrt1 <- glmLRT(fit, coef = 6)
 
 # Extract top differentially expressed genes
 sgGens <- as.data.frame(topTags(lrt1, adjust.method = 'fdr', n = nrow(cts1)))
 sgGens$transcript <- rownames(sgGens)
 
 write.csv(sgGens, file = "hanani_sggenes.csv", row.names = FALSE)
+
+#put the TRF you want to see here
+trf <- 'tRF-29-PSQP4PW3FJFL'
+tmp<-as.data.frame(t(cts1[trf,]))
+colnames(tmp)<-'cpm_exp'
+tmp$Sample_ID <- row.names(tmp)
+tmp <- merge(tmp, ColData, by = "Sample_ID")
+
+# Create the plot
+ggplot(tmp, aes(Time_taken,log10(cpm_exp), col = Treatment)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_point(size = 3,position = position_jitterdodge(jitter.width=0.1,jitter.height = 0)) +
+  labs(title = paste("CPM of", trf),
+       x = "Sample ID",
+       y = "CPM",
+       color = "Treatment") +
+  facet_wrap(~Place_taken)
 
