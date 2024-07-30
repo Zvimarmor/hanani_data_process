@@ -1,4 +1,4 @@
-# Hanani Data Processing and Analysis Project
+# Hanani's Data Processing and Analysis Project
 
 This project involves the preprocessing, dimensionality reduction, clustering, and differential expression analysis of tRNA data. The main steps include reading in the data, filtering, mapping non-numeric columns to numeric values, performing PCA, t-SNE, LDA, clustering using the K-means algorithm, and additional analysis using R.
 
