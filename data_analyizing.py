@@ -142,63 +142,88 @@ Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 
 #######K means clustering########
 
-from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
 
-# Apply K-means clustering
-kmeans = KMeans(n_clusters=3, random_state=0)
-kmeans.fit(Hanani_proccessed_data)
+# # Apply K-means clustering
+# kmeans = KMeans(n_clusters=3, random_state=0)
+# kmeans.fit(Hanani_proccessed_data)
 
-labels = kmeans.labels_
-centroids = kmeans.cluster_centers_
-Hanani_proccessed_data['kmeans_cluster'] = labels
+# labels = kmeans.labels_
+# centroids = kmeans.cluster_centers_
+# Hanani_proccessed_data['kmeans_cluster'] = labels
 
-# Plotting K-means clustering results
-plot_cluster(0, 1, 'K-means Clustering', 'PC1', 'PC2', labels=Hanani_proccessed_data['kmeans_cluster'])
-print_cluster_info(Hanani_proccessed_data, labels, 'kmeans_cluster')
+# # Plotting K-means clustering results
+# plot_cluster(0, 1, 'K-means Clustering', 'PC1', 'PC2', labels=Hanani_proccessed_data['kmeans_cluster'])
+# print_cluster_info(Hanani_proccessed_data, labels, 'kmeans_cluster')
 
-#######Spectral Clustering########
-from sklearn.cluster import SpectralClustering
+# #######Spectral Clustering########
+# from sklearn.cluster import SpectralClustering
 
-# Initialize SpectralClustering
-spectral = SpectralClustering(n_clusters=3, affinity='nearest_neighbors', random_state=0)
-spectral_labels = spectral.fit_predict(Hanani_proccessed_data[numeric_columns])
+# # Initialize SpectralClustering
+# spectral = SpectralClustering(n_clusters=3, affinity='nearest_neighbors', random_state=0)
+# spectral_labels = spectral.fit_predict(Hanani_proccessed_data[numeric_columns])
 
-# Add SpectralClustering labels to the data
-Hanani_proccessed_data['Spectral_Cluster'] = spectral_labels
+# # Add SpectralClustering labels to the data
+# Hanani_proccessed_data['Spectral_Cluster'] = spectral_labels
 
-# Plotting Spectral Clustering results
-plot_cluster(0, 1, 'Spectral Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Spectral_Cluster'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Spectral_Cluster'], 'Spectral_Cluster')
+# # Plotting Spectral Clustering results
+# plot_cluster(0, 1, 'Spectral Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Spectral_Cluster'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Spectral_Cluster'], 'Spectral_Cluster')
 
-#######Agglomerative Clustering########
-from sklearn.cluster import AgglomerativeClustering
+# #######Agglomerative Clustering########
+# from sklearn.cluster import AgglomerativeClustering
 
-# Initialize AgglomerativeClustering
-agg_clustering = AgglomerativeClustering(n_clusters=3, linkage='ward')
+# # Initialize AgglomerativeClustering
+# agg_clustering = AgglomerativeClustering(n_clusters=3, linkage='ward')
 
-# Fit the model
-agg_labels = agg_clustering.fit_predict(Hanani_proccessed_data[numeric_columns])
+# # Fit the model
+# agg_labels = agg_clustering.fit_predict(Hanani_proccessed_data[numeric_columns])
 
-# Add AgglomerativeClustering labels to the data
-Hanani_proccessed_data['Agglomerative_Cluster'] = agg_labels
+# # Add AgglomerativeClustering labels to the data
+# Hanani_proccessed_data['Agglomerative_Cluster'] = agg_labels
 
-# Plotting Agglomerative Clustering results
-plot_cluster(0, 1, 'Agglomerative Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Agglomerative_Cluster'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Agglomerative_Cluster'], 'Agglomerative_Cluster')
+# # Plotting Agglomerative Clustering results
+# plot_cluster(0, 1, 'Agglomerative Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Agglomerative_Cluster'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Agglomerative_Cluster'], 'Agglomerative_Cluster')
 
-# #######Hierarchical Clustering########
-from scipy.cluster.hierarchy import linkage, fcluster
-import scipy.cluster.hierarchy as sch
+# # #######Hierarchical Clustering########
+# from scipy.cluster.hierarchy import linkage, fcluster
+# import scipy.cluster.hierarchy as sch
 
-# Compute the linkage matrix
-Z = linkage(Hanani_proccessed_data[numeric_columns], method='ward')
+# # Compute the linkage matrix
+# Z = linkage(Hanani_proccessed_data[numeric_columns], method='ward')
 
-# Form clusters
-hierarchical_labels = fcluster(Z, t=3, criterion='maxclust')
+# # Form clusters
+# hierarchical_labels = fcluster(Z, t=3, criterion='maxclust')
 
-# Add Hierarchical labels to the data
-Hanani_proccessed_data['Hierarchical_Cluster'] = hierarchical_labels
+# # Add Hierarchical labels to the data
+# Hanani_proccessed_data['Hierarchical_Cluster'] = hierarchical_labels
 
-# Plotting Hierarchical Clustering results
-plot_cluster(0, 1, 'Hierarchical Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Hierarchical_Cluster'])
-print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Hierarchical_Cluster'], 'Hierarchical_Cluster')
+# # Plotting Hierarchical Clustering results
+# plot_cluster(0, 1, 'Hierarchical Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Hierarchical_Cluster'])
+# print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Hierarchical_Cluster'], 'Hierarchical_Cluster')
+
+
+#######SVM Classification########
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+
+X, y = Hanani_proccessed_data.drop('Treatment', axis=1), Hanani_proccessed_data['Treatment']
+
+test_sizes = [0.1, 0.2, 0.3, 0.4, 0.5]
+train_sizes = [1 - test_size for test_size in test_sizes]
+accuracies = []
+
+for test_size in test_sizes:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=52)
+    model = SVC(kernel='linear')
+    model.fit(X_train, y_train)
+    accuracies.append(model.score(X_test, y_test))
+    print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
+
+plt.plot(train_sizes, accuracies)
+plt.xlabel('Train Size (out of 1)')
+plt.ylabel('Accuracy') 
+plt.title('SVM Classification Accuracy vs. Test Size')
+plt.show()
+plt.close()
