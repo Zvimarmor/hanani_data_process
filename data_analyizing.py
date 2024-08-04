@@ -140,8 +140,9 @@ def data_mapping(data):
 #mapping the data
 Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 
-#######K means clustering########
 
+
+#######K means clustering########
 # from sklearn.cluster import KMeans
 
 # # Apply K-means clustering
@@ -156,6 +157,8 @@ Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 # plot_cluster(0, 1, 'K-means Clustering', 'PC1', 'PC2', labels=Hanani_proccessed_data['kmeans_cluster'])
 # print_cluster_info(Hanani_proccessed_data, labels, 'kmeans_cluster')
 
+
+
 # #######Spectral Clustering########
 # from sklearn.cluster import SpectralClustering
 
@@ -169,6 +172,8 @@ Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 # # Plotting Spectral Clustering results
 # plot_cluster(0, 1, 'Spectral Clustering', 'Feature 1', 'Feature 2', labels=Hanani_proccessed_data['Spectral_Cluster'])
 # print_cluster_info(Hanani_proccessed_data, Hanani_proccessed_data['Spectral_Cluster'], 'Spectral_Cluster')
+
+
 
 # #######Agglomerative Clustering########
 # from sklearn.cluster import AgglomerativeClustering
@@ -221,9 +226,54 @@ for test_size in test_sizes:
     accuracies.append(model.score(X_test, y_test))
     print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
 
-plt.plot(train_sizes, accuracies)
-plt.xlabel('Train Size (out of 1)')
-plt.ylabel('Accuracy') 
-plt.title('SVM Classification Accuracy vs. Test Size')
+# plt.plot(train_sizes, accuracies)
+# plt.xlabel('Train Size (out of 1)')
+# plt.ylabel('Accuracy') 
+# plt.title('SVM Classification Accuracy vs. Test Size')
+# plt.show()
+# plt.close()
+
+#######Random Forest Classification########
+# from sklearn.ensemble import RandomForestClassifier
+
+# accuracies = []
+
+# for test_size in test_sizes:
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+#     model = RandomForestClassifier(n_estimators=10)
+#     model.fit(X_train, y_train)
+#     accuracies.append(model.score(X_test, y_test))
+#     print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
+
+#######perceotron Classification########
+# from sklearn.linear_model import Perceptron
+
+# accuracies = []
+
+# for test_size in test_sizes:
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+#     model = Perceptron()
+#     model.fit(X_train, y_train)
+#     accuracies.append(model.score(X_test, y_test))
+#     print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
+
+
+#######knn Classification########
+from sklearn.neighbors import KNeighborsClassifier
+
+accuracies = []
+k_values = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+
+for value in k_values:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
+    model = KNeighborsClassifier(n_neighbors=value)
+    model.fit(X_train, y_train)
+    accuracies.append(model.score(X_test, y_test))
+    print('num of neighbors:', value,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
+
+plt.plot(k_values, accuracies)
+plt.xlabel('Number of Neighbors')
+plt.ylabel('Accuracy')
+plt.title('KNN Classification Accuracy vs. Number of Neighbors')
 plt.show()
 plt.close()
