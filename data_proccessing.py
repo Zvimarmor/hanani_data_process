@@ -3,20 +3,32 @@ import numpy as np
 
 def load_data():
     # Load the data
-    data = pd.read_csv('Samples_info_numeric.csv', header=0, index_col=0)
+    data = pd.read_csv('data.csv')
     return data
 
 
-df = load_data()
-# Replace values in specific columns
-df['Sex'].replace('M', 1, inplace=True)
-df['Sex'].replace('F', 0, inplace=True)
 
-df['Treatment'].replace('LPS', 1, inplace=True)
-df['Treatment'].replace('CNT', 0, inplace=True)
+cpm_all = pd.read_csv('cpm_all_samples.csv', header=0, index_col=0)
 
-df['Time_taken'].replace('24h', 24, inplace=True)
-df['Time_taken'].replace('4h', 4, inplace=True)
-df['Time_taken'].replace('7d', 168, inplace=True)
+to_remove = []
 
-df.to_csv('Samples_info_numeric.csv', index=False)
+# Iterate over the rows of the DataFrame
+for g in cpm_all.index:
+    row_values = cpm_all.loc[g].astype(float)
+    percentile_85 = np.percentile(row_values, 85)
+    mean_value = row_values.mean()
+    median_value = row_values.median()
+
+    if median_value< 10:
+        to_remove.append(g)
+    
+    # Append the index to to_remove if the condition is met
+    if percentile_85 < mean_value:
+        to_remove.append(g)
+
+# Filter out rows in to_remove from the DataFrame
+cpm_all = cpm_all.drop(to_remove)
+
+cpm_all.to_csv('cpm_all_samples.csv')
+
+

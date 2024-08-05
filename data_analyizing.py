@@ -11,20 +11,18 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 ColData = pd.read_csv('Samples_info.csv', header=0, index_col=0)
 CountsDataFrame = pd.read_csv('tRNA_Exclusive_Combined_data.csv', header=0, index_col=0)
 
-trf_with_fdr_less_than_0_05 = ['tRF-28-P4R8YP9LOND5', 'tRF-28-86J8WPMN1E0J', 'tRF-30-RRJ89O9NF5W8', 'tRF-30-R9J89O9NF5W8', 
-                               'tRF-29-RRJ89O9NF5JP', 'tRF-28-PIR8YP9LOND5', 'tRF-30-86J8WPMN1E8Y', 'tRF-30-86V8WPMN1E8Y',
-                                 'tRF-28-86V8WPMN1E0J', 'tRF-29-P4R8YP9LONHK', 'tRF-29-86V8WPMN1EJ3', 'tRF-29-86J8WPMN1EJ3',
-                                   'tRF-31-XSXMSL73VL4YD', 'tRF-25-PS5P4PW3FJ', 'tRF-31-86J8WPMN1E8Y0', 'tRF-28-PER8YP9LOND5',
-                                     'tRF-17-W96KM8N', 'tRF-31-86V8WPMN1E8Y0', 'tRF-16-NS5J7KE', 'tRF-34-389MV47P596VJ5', 
-                                     'tRF-31-FSXMSL73VL4YD', 'tRF-30-PSQP4PW3FJI0', 'tRF-17-W9RKM8N']
+#tool to keep only the wanted trfs
+#trf_with_fdr_less_than_0_05 = ['tRF-28-P4R8YP9LOND5', 'tRF-28-86J8WPMN1E0J', 'tRF-30-RRJ89O9NF5W8', 'tRF-30-R9J89O9NF5W8', 
+#                               'tRF-29-RRJ89O9NF5JP', 'tRF-28-PIR8YP9LOND5', 'tRF-30-86J8WPMN1E8Y', 'tRF-30-86V8WPMN1E8Y',
+#                                 'tRF-28-86V8WPMN1E0J', 'tRF-29-P4R8YP9LONHK', 'tRF-29-86V8WPMN1EJ3', 'tRF-29-86J8WPMN1EJ3',
+#                                   'tRF-31-XSXMSL73VL4YD', 'tRF-25-PS5P4PW3FJ', 'tRF-31-86J8WPMN1E8Y0', 'tRF-28-PER8YP9LOND5',
+#                                     'tRF-17-W96KM8N', 'tRF-31-86V8WPMN1E8Y0', 'tRF-16-NS5J7KE', 'tRF-34-389MV47P596VJ5', 
+#                                     'tRF-31-FSXMSL73VL4YD', 'tRF-30-PSQP4PW3FJI0', 'tRF-17-W9RKM8N']
+#CountsDataFrame = CountsDataFrame[CountsDataFrame.index.isin(trf_with_fdr_less_than_0_05)]
 
-#keep only the rows with 'Sample_ID' in the trf_with_fdr_less_than_0_05 list
-CountsDataFrame = CountsDataFrame[CountsDataFrame.index.isin(trf_with_fdr_less_than_0_05)]
 
 # Filter out rows where sum > 2
 CountsDataFrame = CountsDataFrame[CountsDataFrame.sum(axis=1) > 2]
-
-print(CountsDataFrame)
 
 # Transpose the data frame for PCA
 Hanani_proccessed_data = CountsDataFrame.T
@@ -38,13 +36,14 @@ Hanani_proccessed_data = pd.merge(Hanani_proccessed_data, ColData, left_on='Samp
 # Set index to Sample_ID
 Hanani_proccessed_data.set_index('Sample_ID', inplace=True)
 
-#drop column Ester_4h_LPS_F_S_S3_R1_001.flexbar_q.fastq (problematic column)
-#Hanani_proccessed_data = Hanani_proccessed_data.drop('Ester_4h_LPS_F_S_S3_R1_001.flexbar_q.fastq')
-
 # Remove non-numeric columns for PCA
 non_numeric_columns = ['Time_taken', 'Treatment', 'Sex', 'Place_taken', 'Sample_num']
 numeric_columns = [col for col in Hanani_proccessed_data.columns if col not in non_numeric_columns]
 
+cpm_all = pd.read_csv('cpm_all_samples.csv', header=0, index_col=0)
+Hanani_proccessed_data_S = pd.read_csv('Hanani_proccessed_data_S.csv', header=0, index_col=0)
+
+#TODO; keep only the wanted trfs who are in the cpm_all after filtering the cpm (the filtering is done in the data_proccessing.py)
 
 #######Plotting########
 
@@ -222,28 +221,28 @@ Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 
 
 #######SVM Classification########
-from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
+# from sklearn.svm import SVC
+# from sklearn.model_selection import train_test_split
 
-X, y = Hanani_proccessed_data.drop('Treatment', axis=1), Hanani_proccessed_data['Treatment']
+# X, y = Hanani_proccessed_data.drop('Treatment', axis=1), Hanani_proccessed_data['Treatment']
 
-test_sizes = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,0.45,0.5]
-train_sizes = [1 - test_size for test_size in test_sizes]
-accuracies = []
+# test_sizes = [0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4,0.45,0.5]
+# train_sizes = [1 - test_size for test_size in test_sizes]
+# accuracies = []
 
-for test_size in test_sizes:
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=52)
-    model = SVC(kernel='linear')
-    model.fit(X_train, y_train)
-    accuracies.append(model.score(X_test, y_test))
-    print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
+# for test_size in test_sizes:
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=52)
+#     model = SVC(kernel='linear')
+#     model.fit(X_train, y_train)
+#     accuracies.append(model.score(X_test, y_test))
+#     print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
 
-plt.plot(train_sizes, accuracies)
-plt.xlabel('Train Size (out of 1)')
-plt.ylabel('Accuracy') 
-plt.title('SVM Classification Accuracy vs. Test Size')
-plt.show()
-plt.close()
+# plt.plot(train_sizes, accuracies)
+# plt.xlabel('Train Size (out of 1)')
+# plt.ylabel('Accuracy') 
+# plt.title('SVM Classification Accuracy vs. Test Size')
+# plt.show()
+# plt.close()
 
 #######Random Forest Classification########
 # from sklearn.ensemble import RandomForestClassifier
@@ -271,16 +270,16 @@ plt.close()
 
 
 #######knn Classification########
-from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.neighbors import KNeighborsClassifier
 
-accuracies = []
-k_values = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+# accuracies = []
+# k_values = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
 
-for value in k_values:
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
-    model = KNeighborsClassifier(n_neighbors=value)
-    model.fit(X_train, y_train)
-    accuracies.append(model.score(X_test, y_test))
+# for value in k_values:
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
+#     model = KNeighborsClassifier(n_neighbors=value)
+#     model.fit(X_train, y_train)
+#     accuracies.append(model.score(X_test, y_test))
     #print('num of neighbors:', value,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
 
 # plt.plot(k_values, accuracies)
@@ -291,15 +290,15 @@ for value in k_values:
 # plt.close()
 
 #######Gradient Boosting Classification########
-from sklearn.ensemble import GradientBoostingClassifier
+# from sklearn.ensemble import GradientBoostingClassifier
 
-accuracies = []
+# accuracies = []
 
-for test_size in test_sizes:
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
-    model = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)
-    model.fit(X_train, y_train)
-    accuracies.append(model.score(X_test, y_test))
+# for test_size in test_sizes:
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size)
+#     model = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)
+#     model.fit(X_train, y_train)
+#     accuracies.append(model.score(X_test, y_test))
 #     print('test size:', test_size,'accuracy:', model.score(X_test, y_test), 'num of right predictions: ', model.score(X_test, y_test) * X_test.shape[0],'out of:', X_test.shape[0])
 
 # plt.plot(train_sizes, accuracies)
