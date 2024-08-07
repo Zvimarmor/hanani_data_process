@@ -23,7 +23,6 @@ pcaData1 <- merge(pcaData1, ColData, by = "Sample_ID")
 # Set row names to sample IDs
 rownames(pcaData1) <- pcaData1$Sample_ID
 
-
 # Perform PCA on the processed data
 pca_res1 <- prcomp(pcaData1[2:ncol(tmp1)], scale = TRUE)
 
@@ -36,12 +35,7 @@ autoplot(pca_res1, x = 1, y = 2, data = pcaData1, colour = c, label = F, size = 
 # Plot PCA results for the third and fourth principal components
 autoplot(pca_res1, x = 3, y = 4, data = pcaData1, colour = c, label = F, size = 3)
 
-toRemove<-c() 
-for(g in rownames(CountsDataFrame)){
-  if(quantile(as.numeric(CountsDataFrame[g,]),prob=0.95)<mean(as.numeric(CountsDataFrame[g,]))){toRemove<-append(toRemove,g)}}
-# Assign counts data to a variable
-cts <- CountsDataFrame[!rownames(CountsDataFrame) %in% toRemove,]
-
+cts<-CountsDataFrame
 # Assign column data to a variable
 cold1 <- ColData
 print(cold1)
@@ -63,19 +57,27 @@ nrow(cold1) == sum(cold1$Sample_ID == colnames(cts))
 y <- DGEList(counts = cts, group = cold1$Treatment) # change 'condition' to the name of your condition column
 
 # Filter genes by expression
-keep <- filterByExpr(y)
-y <- y[keep, , keep.lib.sizes = FALSE]
+#keep <- filterByExpr(y)
+#y <- y[keep, , keep.lib.sizes = FALSE]
+
+toRemove<-c() 
+for(g in rownames(CountsDataFrame)){
+  if(quantile(as.numeric(CountsDataFrame[g,]),prob=0.85)<mean(as.numeric(CountsDataFrame[g,]))){toRemove<-append(toRemove,g)}}
+#Assign counts data to a variable
+cts <- CountsDataFrame[!rownames(CountsDataFrame) %in% toRemove,]
+
 
 # Update library sizes
 y$samples$lib.size <- colSums(y$counts)
+cpms<-as.data.frame(cpm(cts))
 
+
+write.csv(cpms, file = "cpm_all_samples_T.csv", row.names = TRUE)
 # Calculate normalization factors
 y <- calcNormFactors(y)
 
 # Create normalized counts matrix
 cts1 <- as.data.frame(cpm(y, log = FALSE))
-
-write.csv(cts1, file = "cpm_all_samples.csv", row.names = TRUE)
 
 # Create model matrix for differential expression analysis
 dsgn <- model.matrix( ~Time_taken+Sex+Place_taken+Treatment, data = cold1)
@@ -99,7 +101,7 @@ lrt1 <- glmLRT(fit, coef = 6)
 sgGens <- as.data.frame(topTags(lrt1, adjust.method = 'fdr', n = nrow(cts1)))
 sgGens$transcript <- rownames(sgGens)
 
-write.csv(sgGens, file = "hanani_sggenes.csv", row.names = FALSE)
+write.csv(sgGens, file = "hanani_sg_genes_T.csv", row.names = FALSE)
 
 #put the TRF you want to see here
 trf <- 'tRF-29-PSQP4PW3FJFL'
