@@ -7,9 +7,17 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 #######Data Preprocessing########
 
-# Read in the data
-ColData = pd.read_csv('Samples_info.csv', header=0, index_col=0)
-CountsDataFrame = pd.read_csv('tRNA_Exclusive_Combined_data.csv', header=0, index_col=0)
+# # Read in the data
+# ColData = pd.read_csv('Samples_info.csv', header=0, index_col=0)
+# CountsDataFrame = pd.read_csv('tRNA_Exclusive_Combined_data.csv', header=0, index_col=0)
+
+# #seperate the data into two file by place taken - S or T
+# Samples_info_S = ColData[ColData['Place_taken'] == 'S']
+# Samples_info_T = ColData[ColData['Place_taken'] == 'T']
+
+# #save the data into csv files
+# Samples_info_S.to_csv('Samples_info_S.csv')
+# Samples_info_T.to_csv('Samples_info_T.csv')
 
 #tool to keep only the wanted trfs
 #trf_with_fdr_less_than_0_05 = ['tRF-28-P4R8YP9LOND5', 'tRF-28-86J8WPMN1E0J', 'tRF-30-RRJ89O9NF5W8', 'tRF-30-R9J89O9NF5W8', 
@@ -21,46 +29,44 @@ CountsDataFrame = pd.read_csv('tRNA_Exclusive_Combined_data.csv', header=0, inde
 #CountsDataFrame = CountsDataFrame[CountsDataFrame.index.isin(trf_with_fdr_less_than_0_05)]
 
 
-# Filter out rows where sum > 2
-CountsDataFrame = CountsDataFrame[CountsDataFrame.sum(axis=1) > 2]
+# # Filter out rows where sum > 2
+# CountsDataFrame = CountsDataFrame[CountsDataFrame.sum(axis=1) > 2]
 
-# Transpose the data frame for PCA
-Hanani_proccessed_data = CountsDataFrame.T
+# # Transpose the data frame for PCA
+# Hanani_proccessed_data = CountsDataFrame.T
 
-# Add sample IDs as a column
-Hanani_proccessed_data['Sample_ID'] = Hanani_proccessed_data.index
+# # Add sample IDs as a column
+# Hanani_proccessed_data['Sample_ID'] = Hanani_proccessed_data.index
 
-# Merge with sample information
-Hanani_proccessed_data = pd.merge(Hanani_proccessed_data, ColData, left_on='Sample_ID', right_index=True)
+# # Merge with sample information
+# Hanani_proccessed_data = pd.merge(Hanani_proccessed_data, ColData, left_on='Sample_ID', right_index=True)
 
-# Set index to Sample_ID
-Hanani_proccessed_data.set_index('Sample_ID', inplace=True)
+# # Set index to Sample_ID
+# Hanani_proccessed_data.set_index('Sample_ID', inplace=True)
 
-# Remove non-numeric columns for PCA
-non_numeric_columns = ['Time_taken', 'Treatment', 'Sex', 'Place_taken', 'Sample_num']
-numeric_columns = [col for col in Hanani_proccessed_data.columns if col not in non_numeric_columns]
+# # Remove non-numeric columns for PCA
+# non_numeric_columns = ['Time_taken', 'Treatment', 'Sex', 'Place_taken', 'Sample_num']
+# numeric_columns = [col for col in Hanani_proccessed_data.columns if col not in non_numeric_columns]
 
-cpm_all = pd.read_csv('cpm_all_samples.csv', header=0, index_col=0)
-Hanani_proccessed_data_S = pd.read_csv('Hanani_proccessed_data_S.csv', header=0, index_col=0)
-
-#TODO; keep only the wanted trfs who are in the cpm_all after filtering the cpm (the filtering is done in the data_proccessing.py)
+# cpm_all = pd.read_csv('cpm_all_samples.csv', header=0, index_col=0)
+# Hanani_proccessed_data_S = pd.read_csv('Hanani_proccessed_data_S.csv', header=0, index_col=0)
 
 #######Plotting########
 
-def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
-    plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(data[:, x], data[:, y], c=labels, cmap='viridis')
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(title)
-    # Create a legend
-    unique_labels = np.unique(labels)
-    handles = [plt.Line2D([0], [0], marker='o', color='w', label=label_mapping[label], 
-                          markersize=10, markerfacecolor=plt.cm.viridis(i / max(unique_labels))) 
-               for i, label in enumerate(unique_labels)]
-    plt.legend(handles = handles, title='Treatment & Time Taken', loc='best')
-    plt.show()
-    plt.close()
+# def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
+#     plt.figure(figsize=(10, 8))
+#     scatter = plt.scatter(data[:, x], data[:, y], c=labels, cmap='viridis')
+#     plt.xlabel(xlabel)
+#     plt.ylabel(ylabel)
+#     plt.title(title)
+#     # Create a legend
+#     unique_labels = np.unique(labels)
+#     handles = [plt.Line2D([0], [0], marker='o', color='w', label=label_mapping[label], 
+#                           markersize=10, markerfacecolor=plt.cm.viridis(i / max(unique_labels))) 
+#                for i, label in enumerate(unique_labels)]
+#     plt.legend(handles = handles, title='Treatment & Time Taken', loc='best')
+#     plt.show()
+#     plt.close()
 
 
 
@@ -103,38 +109,38 @@ def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
 
 
 #######clustering methods########
-def plot_cluster(x, y, title, xlabel, ylabel, labels, data=Hanani_proccessed_data, jitter=True):
-    # Ensure the DataFrame is being used properly
-    if jitter:
-        jitter_strength = 0.1
-        jittered_x = data.iloc[:, x] + np.random.uniform(-jitter_strength, jitter_strength, data.shape[0])
-        jittered_y = data.iloc[:, y] + np.random.uniform(-jitter_strength, jitter_strength, data.shape[0])
-    else:
-        jittered_x = data.iloc[:, x]
-        jittered_y = data.iloc[:, y]
+# def plot_cluster(x, y, title, xlabel, ylabel, labels, data=Hanani_proccessed_data, jitter=True):
+#     # Ensure the DataFrame is being used properly
+#     if jitter:
+#         jitter_strength = 0.1
+#         jittered_x = data.iloc[:, x] + np.random.uniform(-jitter_strength, jitter_strength, data.shape[0])
+#         jittered_y = data.iloc[:, y] + np.random.uniform(-jitter_strength, jitter_strength, data.shape[0])
+#     else:
+#         jittered_x = data.iloc[:, x]
+#         jittered_y = data.iloc[:, y]
 
-    # Plotting
-    plt.figure(figsize=(18, 8))
-    plt.scatter(jittered_x, jittered_y, c=labels, cmap='viridis', s=100, alpha=0.6)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.title(title)
-    plt.show()
+#     # Plotting
+#     plt.figure(figsize=(18, 8))
+#     plt.scatter(jittered_x, jittered_y, c=labels, cmap='viridis', s=100, alpha=0.6)
+#     plt.xlabel(xlabel)
+#     plt.ylabel(ylabel)
+#     plt.title(title)
+#     plt.show()
 
-def print_cluster_info(data, labels, cluster_column):
-    unique_clusters = np.unique(labels)
-    for cluster in unique_clusters:
-        print('Cluster: ', cluster)
-        print('num of samples: ', data[data[cluster_column] == cluster].shape[0])
-        print('LPS: ', data[(data[cluster_column] == cluster) & (data['Treatment'] == 1)].shape[0])
-        print('ctrl: ', data[(data[cluster_column] == cluster) & (data['Treatment'] == 0)].shape[0])
-        print('4h: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 4)].shape[0])
-        print('24h: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 24)].shape[0])
-        print('7d: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 7 * 24)].shape[0])
+# def print_cluster_info(data, labels, cluster_column):
+#     unique_clusters = np.unique(labels)
+#     for cluster in unique_clusters:
+#         print('Cluster: ', cluster)
+#         print('num of samples: ', data[data[cluster_column] == cluster].shape[0])
+#         print('LPS: ', data[(data[cluster_column] == cluster) & (data['Treatment'] == 1)].shape[0])
+#         print('ctrl: ', data[(data[cluster_column] == cluster) & (data['Treatment'] == 0)].shape[0])
+#         print('4h: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 4)].shape[0])
+#         print('24h: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 24)].shape[0])
+#         print('7d: ', data[(data[cluster_column] == cluster) & (data['Time_taken'] == 7 * 24)].shape[0])
 
 def data_mapping(data):
     # Mapping dictionary
-    time_mapping = {'4h': 4,'24h': 24, '7d': 7 * 24 }
+    time_mapping = {'4h': 4,'24h': 24, '7d': 7 * 24 ,'0': 0}
     Sex_mapping = {'M': 0, 'F': 1}
     Treatment_mapping = {'CNT': 0, 'LPS': 1}
     Place_taken_mapping = {'S': 0, 'T': 1}
@@ -145,11 +151,12 @@ def data_mapping(data):
     data['Treatment'] = data['Treatment'].map(Treatment_mapping)
     data['Place_taken'] = data['Place_taken'].map(Place_taken_mapping)
     data['Sample_num'] = data['Sample_num'].str.replace('S', '')
+    data['Time_taken_normalized'] = data['Time_taken_normalized'].map(time_mapping)
 
     return data
 
-#mapping the data
-Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
+# #mapping the data
+# Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 
 
 
@@ -307,3 +314,21 @@ Hanani_proccessed_data = data_mapping(Hanani_proccessed_data)
 # plt.title('Gradient Boosting Classification Accuracy vs. Test Size')
 # plt.show()
 # plt.close()
+
+
+#######cpm data analysis########
+
+cpm_data = pd.read_csv('placetaken_S/cpm_S.csv', header=0, index_col=0)
+cpm_data = cpm_data.T
+cpm_data = data_mapping(cpm_data)
+
+for row in cpm_data.iterrows():
+    zero_time = cpm_data[(cpm_data['Time_taken_normalized'] == 0)]
+    # four_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 4)].mean()
+    # twenty_four_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 24)].mean()
+    # seven_days_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 7 * 24)].mean()
+
+    print('row number:', row[0])
+
+print('zero time:', zero_time.shape)  
+
