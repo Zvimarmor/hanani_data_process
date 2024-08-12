@@ -4,6 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from scipy.stats import spearmanr
 
 #######Data Preprocessing########
 
@@ -316,9 +317,28 @@ def data_mapping(data):
 # plt.close()
 
 
-#######cpm data analysis########
+#######rpm data analysis per each Ganglion########
 
-data = pd.read_csv('tRNA_data_RPM.csv', header=0, index_col=0)
+# rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
 
-print(data.shape)
+# Time_taken_normalized = [0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,168,168,168,168]
+# not_to_include = ['Time_taken', 'Treatment','Sex','Place_taken','Sample_num', 'Time_taken_normalized']
+
+# # Initialize a list to store the correlations
+# correlations = []
+
+# # Calculate Spearman correlation for each relevant row
+# for index, row in rpm.iterrows():
+#     if index not in not_to_include:
+#         correlation, _ = spearmanr(Time_taken_normalized, row)
+#         correlations.append(correlation)
+#     else:
+#         # For excluded rows, append NaN or some placeholder value
+#         correlations.append(float('nan'))
+
+# # Add the correlations as a new column in the original DataFrame
+# rpm['Spearman_correlation'] = correlations
+
+#rpm.to_csv('placetaken_T/T_RPM_with_correlation.csv')
+
 

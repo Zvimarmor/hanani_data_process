@@ -1,0 +1,7 @@
+,Ester_24h_CNT_F_T_S29_R1_001.flexbar_q.fastq,Ester_24h_CNT_F_T_S30_R1_001.flexbar_q.fastq,Ester_24h_CNT_M_T_S41_R1_001.flexbar_q.fastq,Ester_24h_CNT_M_T_S42_R1_001.flexbar_q.fastq,Ester_24h_LPS_F_T_S31_R1_001.flexbar_q.fastq,Ester_24h_LPS_M_T_S43_R1_001.flexbar_q.fastq,Ester_24h_LPS_M_T_S44_R1_001.flexbar_q.fastq,Ester_24h_PS_F_T_S32_R1_001.flexbar_q.fastq,Ester_4h_CNT_F_T_S25_R1_001.flexbar_q.fastq,Ester_4h_CNT_F_T_S26_R1_001.flexbar_q.fastq,Ester_4h_CNT_M_T_S37_R1_001.flexbar_q.fastq,Ester_4h_CNT_M_T_S38_R1_001.flexbar_q.fastq,Ester_4h_LPS_F_T_S27_R1_001.flexbar_q.fastq,Ester_4h_LPS_F_T_S28_R1_001.flexbar_q.fastq,Ester_4h_LPS_M_T_S39_R1_001.flexbar_q.fastq,Ester_4h_LPS_M_T_S40_R1_001.flexbar_q.fastq,Ester_7d_CNT_F_T_S33_R1_001.flexbar_q.fastq,Ester_7d_CNT_F_T_S34_R1_001.flexbar_q.fastq,Ester_7d_CNT_M_T_S45_R1_001.flexbar_q.fastq,Ester_7d_CNT_M_T_S46_R1_001.flexbar_q.fastq,Ester_7d_LPS_F_T_S35_R1_001.flexbar_q.fastq,Ester_7d_LPS_F_T_S36_R1_001.flexbar_q.fastq,Ester_7d_LPS_M_T_S47_R1_001.flexbar_q.fastq,Ester_7d_LPS_M_T_S48_R1_001.flexbar_q.fastq
+Time_taken,24,24,24,24,24,24,24,24,4,4,4,4,4,4,4,4,168,168,168,168,168,168,168,168
+Treatment,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1
+Sex,1,1,0,0,1,0,0,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0
+Place_taken,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+Sample_num,29,30,41,42,31,43,44,32,25,26,37,38,27,28,39,40,33,34,45,46,35,36,47,48
+Time_taken_normalized,0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,168,168,168,168
