@@ -318,17 +318,7 @@ def data_mapping(data):
 
 #######cpm data analysis########
 
-cpm_data = pd.read_csv('placetaken_S/cpm_S.csv', header=0, index_col=0)
-cpm_data = cpm_data.T
-cpm_data = data_mapping(cpm_data)
+data = pd.read_csv('tRNA_data_RPM.csv', header=0, index_col=0)
 
-for row in cpm_data.iterrows():
-    zero_time = cpm_data[(cpm_data['Time_taken_normalized'] == 0)]
-    # four_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 4)].mean()
-    # twenty_four_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 24)].mean()
-    # seven_days_time_mean = cpm_data[(cpm_data['Time_taken_normalized'] == 7 * 24)].mean()
-
-    print('row number:', row[0])
-
-print('zero time:', zero_time.shape)  
+print(data.shape)
 
