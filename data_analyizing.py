@@ -341,4 +341,22 @@ def data_mapping(data):
 
 #rpm.to_csv('placetaken_T/T_RPM_with_correlation.csv')
 
+all_rpm = pd.read_csv('placetaken_T/T_RPM_with_correlation.csv', header=0, index_col=0)
+
+# Read the entire CSV file into a single column
+df = pd.read_csv('tRF_meta.csv', usecols=[0, 1, 2, 3,4], header=0, index_col=0)
+
+print(df.head())
+
+
+# Now, merge with all_rpm DataFrame and merge the columns head from the two DataFrames
+merged = pd.merge(all_rpm, df, on='Trfs', how='inner')
+
+# Display the merged DataFrame
+print(merged.head())
+
+# Save the merged DataFrame to a new CSV file
+merged.to_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
+
+
 

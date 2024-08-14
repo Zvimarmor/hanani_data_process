@@ -6,7 +6,7 @@ library(MASS)
 setwd("/Users/zvimarmor/university_second_year/hanani_data_process")
 
 ColData <- read.csv('Samples_info.csv', header = TRUE, row.names = 1)
-CountsDataFrame <- read.csv("tRNA_Exclusive_Combined_data.csv", header = TRUE, row.names = 1)
+CountsDataFrame <- read.csv("tRNA_data.csv", header = TRUE, row.names = 1)
 
 CountsDataFrame<-CountsDataFrame[rowSums(CountsDataFrame)>2,]
 # Assign temporary variable names for counts data and processed column data
@@ -71,7 +71,7 @@ cts1 <- as.data.frame(cpm(y, log = FALSE))
 write.csv(cts1, file = "cpm.csv", row.names = TRUE)
 
 # Create model matrix for differential expression analysis
-dsgn <- model.matrix( ~Time_taken+Sex+_Place_taken+Treatment, data = cold1)
+dsgn <- model.matrix( ~Time_taken+Sex+Place_taken+Treatment, data = cold1)
 
 # Estimate dispersions
 y <- estimateDisp(y, dsgn, robust = TRUE)
@@ -88,4 +88,4 @@ lrt1 <- glmLRT(fit, coef = 2)
 # Extract top differentially expressed genes
 sgGens <- as.data.frame(topTags(lrt1, adjust.method = 'fdr', n = nrow(cts1)))
 sgGens$transcript <- rownames(sgGens)
-write.csv(sgGens, file = "hanani_sggenes.csv", row.names = FALSE)
+write.csv(sgGens, file = "sg_genes_all.csv", row.names = FALSE)
