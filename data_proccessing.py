@@ -23,7 +23,7 @@ def data_mapping(data):
 
     return data
 
-# rpm_all = pd.read_csv('placetaken_T/T_RPM.csv', index_col=0)
+# rpm_all = pd.read_csv('placetaken_S/S_RPM.csv', index_col=0)
 # rpm_all = rpm_all.T
 
 # data_mapping(rpm_all)
@@ -50,7 +50,7 @@ def data_mapping(data):
 # # Filter out rows in to_remove from the DataFrame
 # cpm_all = rpm_all.drop(to_remove)
 
-#cpm_all.to_csv('placetaken_T/T_RPM_filtered.csv')
+# cpm_all.to_csv('placetaken_S/S_RPM_filtered.csv')
 
 #samples_info = pd.read_csv('placetaken_T/T_Samples_info.csv', index_col=0)
 

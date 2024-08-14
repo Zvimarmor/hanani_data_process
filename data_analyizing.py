@@ -319,44 +319,48 @@ def data_mapping(data):
 
 #######rpm data analysis per each Ganglion########
 
-# rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
+# rpm = pd.read_csv('placetaken_S/S_RPM.csv', header=0, index_col=0)
 
 # Time_taken_normalized = [0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,168,168,168,168]
 # not_to_include = ['Time_taken', 'Treatment','Sex','Place_taken','Sample_num', 'Time_taken_normalized']
 
 # # Initialize a list to store the correlations
 # correlations = []
+# p_values = []
 
 # # Calculate Spearman correlation for each relevant row
 # for index, row in rpm.iterrows():
 #     if index not in not_to_include:
-#         correlation, _ = spearmanr(Time_taken_normalized, row)
+#         correlation, p_value = spearmanr(Time_taken_normalized, row)
 #         correlations.append(correlation)
+#         p_values.append(p_value)
 #     else:
 #         # For excluded rows, append NaN or some placeholder value
 #         correlations.append(float('nan'))
+#         p_values.append(float('nan'))
 
 # # Add the correlations as a new column in the original DataFrame
 # rpm['Spearman_correlation'] = correlations
+# rpm['p_values'] = p_values
 
-#rpm.to_csv('placetaken_T/T_RPM_with_correlation.csv')
+# rpm.to_csv('placetaken_S/S_RPM_with_p_val&corr.csv')
 
-all_rpm = pd.read_csv('placetaken_T/T_RPM_with_correlation.csv', header=0, index_col=0)
+# all_rpm = pd.read_csv('placetaken_S/S_RPM_with_p_val&corr.csv', header=0, index_col=0)
 
-# Read the entire CSV file into a single column
-df = pd.read_csv('tRF_meta.csv', usecols=[0, 1, 2, 3,4], header=0, index_col=0)
+# # Read the entire CSV file into a single column
+# df = pd.read_csv('tRF_meta.csv', usecols=[0, 1, 2, 3,4], header=0, index_col=0)
 
-print(df.head())
+# print(df.head())
 
 
-# Now, merge with all_rpm DataFrame and merge the columns head from the two DataFrames
-merged = pd.merge(all_rpm, df, on='Trfs', how='inner')
+# # Now, merge with all_rpm DataFrame and merge the columns head from the two DataFrames
+# merged = pd.merge(all_rpm, df, on='Trfs', how='inner')
 
-# Display the merged DataFrame
-print(merged.head())
+# # Display the merged DataFrame
+# print(merged.head())
 
-# Save the merged DataFrame to a new CSV file
-merged.to_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
+# # Save the merged DataFrame to a new CSV file
+# merged.to_csv('placetaken_S/S_RPM_with_correlation_and_meta_CHECK.csv')
 
 
 
