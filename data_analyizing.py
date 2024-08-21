@@ -5,6 +5,7 @@ from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from scipy.stats import spearmanr
+from statsmodels.stats.multitest import multipletests
 
 #######Data Preprocessing########
 
@@ -362,5 +363,23 @@ def data_mapping(data):
 # # Save the merged DataFrame to a new CSV file
 # merged.to_csv('placetaken_S/S_RPM_with_correlation_and_meta_CHECK.csv')
 
+# Read the CSV file into a DataFrame
+df = pd.read_csv('placetaken_S/S_RPM_with_correlation_and_meta.csv')
+
+# Extract the 'P_value' column for FDR correction
+p_values = df['p_values'].values
+
+print(p_values)
+
+# Perform FDR correction using the Benjamini-Hochberg method
+_, pvals_corrected, _, _ = multipletests(p_values, method='fdr_bh')
+
+print(pvals_corrected)  
+
+# Add the FDR-adjusted p-values back to the DataFrame as a new column after the original p-values column (column number 51)
+df.insert(27, 'FDR_corrected_p_values', pvals_corrected)
+
+# Save the updated DataFrame to a new CSV file
+df.to_csv('placetaken_S/S_RPM_with_fdr_corrected.csv', index=False)
 
 
