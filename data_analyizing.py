@@ -4,7 +4,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import LabelEncoder, StandardScaler
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, pearsonr
 from statsmodels.stats.multitest import multipletests
 from math import log10
 import seaborn as sns
@@ -322,7 +322,7 @@ def data_mapping(data):
 
 #######rpm data analysis per each Ganglion########
 
-# rpm = pd.read_csv('placetaken_S/S_RPM.csv', header=0, index_col=0)
+# rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
 
 # Time_taken_normalized = [0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,168,168,168,168]
 # not_to_include = ['Time_taken', 'Treatment','Sex','Place_taken','Sample_num', 'Time_taken_normalized']
@@ -331,10 +331,11 @@ def data_mapping(data):
 # correlations = []
 # p_values = []
 
-# # Calculate Spearman correlation for each relevant row
+# # Calculate pearson correlation for each row with the 'Time_taken_normalized' column
 # for index, row in rpm.iterrows():
 #     if index not in not_to_include:
-#         correlation, p_value = spearmanr(Time_taken_normalized, row)
+#         numeric_values = row.astype(float).values
+#         correlation, p_value = pearsonr(numeric_values, Time_taken_normalized)
 #         correlations.append(correlation)
 #         p_values.append(p_value)
 #     else:
@@ -343,12 +344,12 @@ def data_mapping(data):
 #         p_values.append(float('nan'))
 
 # # Add the correlations as a new column in the original DataFrame
-# rpm['Spearman_correlation'] = correlations
+# rpm['Pearson_correlation'] = correlations
 # rpm['p_values'] = p_values
 
-# rpm.to_csv('placetaken_S/S_RPM_with_p_val&corr.csv')
+# rpm.to_csv('placetaken_T/T_RPM_with_p_val&pearson.csv')
 
-# all_rpm = pd.read_csv('placetaken_S/S_RPM_with_p_val&corr.csv', header=0, index_col=0)
+# all_rpm = pd.read_csv('placetaken_T/T_RPM_with_p_val&pearson.csv', header=0, index_col=0)
 
 # # Read the entire CSV file into a single column
 # df = pd.read_csv('tRF_meta.csv', usecols=[0, 1, 2, 3,4], header=0, index_col=0)
@@ -363,23 +364,23 @@ def data_mapping(data):
 # print(merged.head())
 
 # # Save the merged DataFrame to a new CSV file
-# merged.to_csv('placetaken_S/S_RPM_with_correlation_and_meta_CHECK.csv')
+# merged.to_csv('placetaken_T/T_RPM_with_pearson_and_meta.csv', index=True)
 
-# Read the CSV file into a DataFrame
-df = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
+# # Read the CSV file into a DataFrame
+# df = pd.read_csv('placetaken_T/T_RPM_with_pearson_and_meta.csv')
 
-# Extract the 'P_value' column for FDR correction
+# # Extract the 'P_value' column for FDR correction
 # p_values = df['p_values'].values
 
-# Perform FDR correction using the Benjamini-Hochberg method
+# # Perform FDR correction using the Benjamini-Hochberg method
 # _, pvals_corrected, _, _ = multipletests(p_values, method='fdr_bh')
 
 
-# Add the FDR-adjusted p-values back to the DataFrame as a new column after the original p-values column (column number 51)
+# # Add the FDR-adjusted p-values back to the DataFrame as a new column after the original p-values column (column number 51)
 # df.insert(27, 'FDR_corrected_p_values', pvals_corrected)
 
-# Save the updated DataFrame to a new CSV file
-# df.to_csv('placetaken_S/S_RPM_with_fdr_corrected.csv', index=False)
+# # Save the updated DataFrame to a new CSV file and the trfs names as first column
+# df.to_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv', index=False)
 
 ##plotting the correlation by the p-values
 # p_values = df['p_values'].values
@@ -408,24 +409,40 @@ df = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
 # plt.show()
 # plt.close()
 
-df1 = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
-df2 = pd.read_csv('placetaken_S/S_RPM_with_correlation_and_meta.csv')
+# df1 = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
+# df2 = pd.read_csv('placetaken_S/S_RPM_with_correlation_and_meta.csv')
 
-# Correct the filtering syntax
-significant_trfs1 = df1[(df1['p_values'] < 0.05) & (np.abs(df1['Spearman_correlation']) > 0.5)]
-significant_trfs2 = df2[(df2['p_values'] < 0.05) & (np.abs(df2['Spearman_correlation']) > 0.5)]
+# # Correct the filtering syntax
+# significant_trfs1 = df1[(df1['p_values'] < 0.05) & (np.abs(df1['Spearman_correlation']) > 0.5)]
+# significant_trfs2 = df2[(df2['p_values'] < 0.05) & (np.abs(df2['Spearman_correlation']) > 0.5)]
 
-print('T ganglion')
-print(significant_trfs1)
-print(len(significant_trfs1))
-print('************************')
-print('S ganglion')
-print(significant_trfs2)
-print(len(significant_trfs2))
+# print('T ganglion')
+# print(significant_trfs1)
+# print(len(significant_trfs1))
+# print('************************')
+# print('S ganglion')
+# print(significant_trfs2)
+# print(len(significant_trfs2))
 
-# Save the significant tRFs to a new CSV file 
-significant_trfs1.to_csv('significant_trfs_T.csv', index=False)
-significant_trfs2.to_csv('significant_trfs_S.csv', index=False)
+# # Save the significant tRFs to a new CSV file 
+# significant_trfs1.to_csv('significant_trfs_T.csv', index=False)
+# significant_trfs2.to_csv('significant_trfs_S.csv', index=False)
+
+# df = pd.read_csv('
+# df = df.set_index('Trfs')
+
+# xaxis= [246.87,637.84,179.44,544.25,119.01,273.69,197.28,224.35,751.41,287.96,423.87,273.57,281.99,260.23,337.0,321.79,418.27,360.24,384.8,376.33,119.44,192.13,354.98,175.26]
+# yaxis = [0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,7*24,7*24,7*24,7*24]
+# Treatment = ['CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS']
+
+
+
+# plt.scatter(xaxis, yaxis)
+# plt.xlabel('tRF-22-VF4YO9XEJ')
+# plt.ylabel('Time_taken_normalized')
+# plt.title('tRF-22-VF4YO9XEJ vs. Time_taken_normalized')
+# plt.show()
+# plt.close()
 
 
 
