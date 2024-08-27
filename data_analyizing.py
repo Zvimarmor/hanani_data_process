@@ -409,12 +409,14 @@ def data_mapping(data):
 # plt.show()
 # plt.close()
 
-# df1 = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
-# df2 = pd.read_csv('placetaken_S/S_RPM_with_correlation_and_meta.csv')
+##plotting the rpm vs time taken##
+
+# df1 = pd.read_csv('placetaken_S/S_RPM_pearson_FDR_meta.csv')
+# df2 = pd.read_csv('placetaken_T/T_RPM_pearson_FDR_meta.csv')
 
 # # Correct the filtering syntax
-# significant_trfs1 = df1[(df1['p_values'] < 0.05) & (np.abs(df1['Spearman_correlation']) > 0.5)]
-# significant_trfs2 = df2[(df2['p_values'] < 0.05) & (np.abs(df2['Spearman_correlation']) > 0.5)]
+# significant_trfs1 = df1[(df1['p_values'] < 0.05) & (np.abs(df1['Pearson_correlation']) > 0.5)]
+# significant_trfs2 = df2[(df2['p_values'] < 0.05) & (np.abs(df2['Pearson_correlation']) > 0.5)]
 
 # print('T ganglion')
 # print(significant_trfs1)
@@ -425,24 +427,55 @@ def data_mapping(data):
 # print(len(significant_trfs2))
 
 # # Save the significant tRFs to a new CSV file 
-# significant_trfs1.to_csv('significant_trfs_T.csv', index=False)
-# significant_trfs2.to_csv('significant_trfs_S.csv', index=False)
+# significant_trfs1.to_csv('significant_trfs_T_pearson.csv', index=False)
+# significant_trfs2.to_csv('significant_trfs_S_pearson.csv', index=False)
 
-# df = pd.read_csv('
+
 # df = df.set_index('Trfs')
 
-# xaxis= [246.87,637.84,179.44,544.25,119.01,273.69,197.28,224.35,751.41,287.96,423.87,273.57,281.99,260.23,337.0,321.79,418.27,360.24,384.8,376.33,119.44,192.13,354.98,175.26]
-# yaxis = [0,0,0,0,24,24,24,24,0,0,0,0,4,4,4,4,0,0,0,0,7*24,7*24,7*24,7*24]
+# yaxis= [10.16,0.0,19.79,23.29,69.79,38.24,14.01,0.0,15.05,12.44,4.17,9.27,7.94,6.62,0.0,11.84,7.71,7.18,0.0,0.0,18.82,91.91,19.4,32.7]
+# Time_taken = [24,24,24,24,24,24,24,24,4,4,4,4,4,4,4,4,168,168,168,168,168,168,168,168]
 # Treatment = ['CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS']
+# interaction = ['CNT_24', 'CNT_24', 'CNT_24', 'CNT_24', 'LPS_24', 'LPS_24', 'LPS_24', 'LPS_24', 'CNT_4', 'CNT_4', 'CNT_4', 'CNT_4', 'LPS_4', 'LPS_4', 'LPS_4', 'LPS_4', 'CNT_168', 'CNT_168', 'CNT_168', 'CNT_168', 'LPS_168', 'LPS_168', 'LPS_168', 'LPS_168']
+# colors= ['blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red']
 
+# #create a list of tuples with the data
+# data = list(zip(yaxis, interaction))
 
+# sort_by = ['CNT_4','LPS_4','CNT_24','LPS_24','CNT_168','LPS_168']
+# data.sort(key=lambda x: sort_by.index(x[1]))
 
-# plt.scatter(xaxis, yaxis)
-# plt.xlabel('tRF-22-VF4YO9XEJ')
-# plt.ylabel('Time_taken_normalized')
-# plt.title('tRF-22-VF4YO9XEJ vs. Time_taken_normalized')
+# #extract the data into two lists
+# yaxis, interaction = zip(*data)
+
+# plt.scatter(interaction, yaxis, c=colors)
+# plt.xlabel('tRF-28-MIF91SS2P4DX')
+# plt.ylabel('Time_taken_normalized and Treatment')
+# plt.title('tRF-28-MIF91SS2P4DX vs. Time_taken_normalized and Treatment in the T ganglion')
 # plt.show()
 # plt.close()
+
+##doing z score normalization (by hand)###
+
+s_rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
+normalized_rpm = pd.DataFrame()
+
+
+for index, row in s_rpm.iterrows():
+    for i in range(6):
+        sum = row[i*4] + row[i*4+1] + row[i*4+2] + row[i*4+3]
+        mean = sum/4
+        std = np.std([row[i*4], row[i*4+1], row[i*4+2], row[i*4+3]])
+        for j in range(4):
+            normalized_rpm.loc[index, i*4+j] = (row[i*4+j] - mean)/std
+
+normalized_rpm.to_csv('placetaken_T/T_RPM_zscore.csv')
+
+#TODO: in this code i did a normaliztion by the time points only. i need to so it correctly in each group of sex&time 
+
+
+
+
 
 
 
