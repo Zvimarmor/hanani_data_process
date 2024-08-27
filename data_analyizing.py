@@ -382,29 +382,50 @@ df = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
 # df.to_csv('placetaken_S/S_RPM_with_fdr_corrected.csv', index=False)
 
 ##plotting the correlation by the p-values
-p_values = df['p_values'].values
-for i in range(len(p_values)):
-    p_values[i] = -log10(p_values[i])
-correlations = df['Spearman_correlation'].values
-trf_types = df['tRF_type(s)']
+# p_values = df['p_values'].values
+# for i in range(len(p_values)):
+#     p_values[i] = -log10(p_values[i])
+# correlations = df['Spearman_correlation'].values
+# trf_types = df['tRF_type(s)']
 
-# Automatically assign colors to each unique tRF type
-unique_trf_types = trf_types.unique()
-colors = sns.color_palette('hsv', len(unique_trf_types))
-color_mapping = dict(zip(unique_trf_types, colors))
-color_assigned = trf_types.map(color_mapping)
+# # Automatically assign colors to each unique tRF type
+# unique_trf_types = trf_types.unique()
+# colors = sns.color_palette('hsv', len(unique_trf_types))
+# color_mapping = dict(zip(unique_trf_types, colors))
+# color_assigned = trf_types.map(color_mapping)
 
-plt.figure(figsize=(12,8))
-plt.scatter(correlations, p_values, c=color_assigned, alpha=0.5)
+# plt.figure(figsize=(12,8))
+# plt.scatter(correlations, p_values, c=color_assigned, alpha=0.5)
 
-# Create legend handles
-handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8) 
-           for trf in unique_trf_types]
-plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
+# # Create legend handles
+# handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8) 
+#            for trf in unique_trf_types]
+# plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
 
-plt.xlabel('Spearman Correlation')
-plt.ylabel('-log10(P-value)')
-plt.title('Spearman Correlation vs. -log10(P-value)')
-plt.show()
-plt.close()
+# plt.xlabel('Spearman Correlation')
+# plt.ylabel('-log10(P-value)')
+# plt.title('Spearman Correlation vs. -log10(P-value)')
+# plt.show()
+# plt.close()
+
+df1 = pd.read_csv('placetaken_T/T_RPM_with_correlation_and_meta.csv')
+df2 = pd.read_csv('placetaken_S/S_RPM_with_correlation_and_meta.csv')
+
+# Correct the filtering syntax
+significant_trfs1 = df1[(df1['p_values'] < 0.05) & (np.abs(df1['Spearman_correlation']) > 0.5)]
+significant_trfs2 = df2[(df2['p_values'] < 0.05) & (np.abs(df2['Spearman_correlation']) > 0.5)]
+
+print('T ganglion')
+print(significant_trfs1)
+print(len(significant_trfs1))
+print('************************')
+print('S ganglion')
+print(significant_trfs2)
+print(len(significant_trfs2))
+
+# Save the significant tRFs to a new CSV file 
+significant_trfs1.to_csv('significant_trfs_T.csv', index=False)
+significant_trfs2.to_csv('significant_trfs_S.csv', index=False)
+
+
 
