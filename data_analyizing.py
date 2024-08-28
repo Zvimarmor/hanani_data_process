@@ -8,6 +8,8 @@ from scipy.stats import spearmanr, pearsonr
 from statsmodels.stats.multitest import multipletests
 from math import log10
 import seaborn as sns
+from scipy.stats import ttest_rel
+from math import log2
 
 #######Data Preprocessing########
 
@@ -30,7 +32,7 @@ import seaborn as sns
 #                                   'tRF-31-XSXMSL73VL4YD', 'tRF-25-PS5P4PW3FJ', 'tRF-31-86J8WPMN1E8Y0', 'tRF-28-PER8YP9LOND5',
 #                                     'tRF-17-W96KM8N', 'tRF-31-86V8WPMN1E8Y0', 'tRF-16-NS5J7KE', 'tRF-34-389MV47P596VJ5', 
 #                                     'tRF-31-FSXMSL73VL4YD', 'tRF-30-PSQP4PW3FJI0', 'tRF-17-W9RKM8N']
-#CountsDataFrame = CountsDataFrame[CountsDataFrame.index.isin(trf_with_fdr_less_than_0_05)]
+#CountsDataFrame = CountsDataFrame[CountsDataFrame.index.isin(trf_with_fdr_les_than_0_05)]
 
 
 # # Filter out rows where sum > 2
@@ -433,7 +435,7 @@ def data_mapping(data):
 
 # df = df.set_index('Trfs')
 
-# yaxis= [10.16,0.0,19.79,23.29,69.79,38.24,14.01,0.0,15.05,12.44,4.17,9.27,7.94,6.62,0.0,11.84,7.71,7.18,0.0,0.0,18.82,91.91,19.4,32.7]
+# yaxis= [-0.4063840514725541,1.083995211456004,-1.184449696089669,0.5068385361062193,-0.7544238213475143,1.3558300031970427,0.15301763949798586,-0.7544238213475143,-0.7608150739635381,1.3458969882795695,-0.7608150739635381,0.1757331596475068,-0.7858269900332325,1.4584125360878775,-0.21520776582943774,-0.4573777802252062,-0.38553089160438053,1.495006945409672,-0.575373043402434,-0.5341030104028572,0.7738206322717607,-1.4471880868877005,0.1365132927117562,0.536854161904184]
 # Time_taken = [24,24,24,24,24,24,24,24,4,4,4,4,4,4,4,4,168,168,168,168,168,168,168,168]
 # Treatment = ['CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS','CNT','CNT','CNT','CNT','LPS','LPS','LPS','LPS']
 # interaction = ['CNT_24', 'CNT_24', 'CNT_24', 'CNT_24', 'LPS_24', 'LPS_24', 'LPS_24', 'LPS_24', 'CNT_4', 'CNT_4', 'CNT_4', 'CNT_4', 'LPS_4', 'LPS_4', 'LPS_4', 'LPS_4', 'CNT_168', 'CNT_168', 'CNT_168', 'CNT_168', 'LPS_168', 'LPS_168', 'LPS_168', 'LPS_168']
@@ -451,30 +453,166 @@ def data_mapping(data):
 # plt.scatter(interaction, yaxis, c=colors)
 # plt.xlabel('tRF-28-MIF91SS2P4DX')
 # plt.ylabel('Time_taken_normalized and Treatment')
-# plt.title('tRF-28-MIF91SS2P4DX vs. Time_taken_normalized and Treatment in the T ganglion')
+# plt.title('tRF-28-MIF91SS2P4DX vs. Time_taken_normalized and Treatment in the T ganglion after zscore normalization')
 # plt.show()
 # plt.close()
 
 ##doing z score normalization (by hand)###
 
-s_rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
-normalized_rpm = pd.DataFrame()
+# s_rpm = pd.read_csv('placetaken_S/S_RPM.csv', header=0, index_col=0)
+# normalized_rpm = pd.DataFrame()
+
+# F_24 = [0,1,4,7]
+# M_24 = [2,3,5,6]
+# F_4 = [8,9,12,13]
+# M_4 = [10,11,14,15]
+# F_168 = [16,17,20,21]
+# M_168 = [18,19,22,23]
+
+# for index, row in s_rpm.iterrows():
+#     #calculate for F_24
+#     mean = row.iloc[F_24].mean()
+#     std = row.iloc[F_24].std()
+#     for i in F_24:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+    
+#     # Calculate for M_24
+#     mean = row.iloc[M_24].mean()
+#     std = row.iloc[M_24].std()
+#     for i in M_24:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+
+#     # Calculate for F_4
+#     mean = row.iloc[F_4].mean()
+#     std = row.iloc[F_4].std()
+#     for i in F_4:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+
+#     # Calculate for M_4
+#     mean = row.iloc[M_4].mean()
+#     std = row.iloc[M_4].std()
+#     for i in M_4:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+
+#     # Calculate for F_168
+#     mean = row.iloc[F_168].mean()
+#     std = row.iloc[F_168].std()
+#     for i in F_168:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+
+#     # Calculate for M_168
+#     mean = row.iloc[M_168].mean()
+#     std = row.iloc[M_168].std()
+#     for i in M_168:
+#         normalized_rpm.loc[index, i] = (row.iloc[i] - mean) / std
+
+# normalized_rpm.to_csv('placetaken_S/S_RPM_zscore.csv')
+
+###doing t test for the z score normalized data###
+
+# s_rpm = pd.read_csv('placetaken_T/T_RPM.csv', header=0, index_col=0)
+
+# # Initialize a list to store the p-values
+# p_values_168 = []
+# significant_trfs = []
+# log2_fold_changes = []
+
+# # Perform t-test for each row
+# for index, row in s_rpm.iterrows():
+#     #LPS = row[[4,5,6,7,12,13,14,15,20,21,22,23]]
+#     #CNT = row[[0,1,2,3,8,9,10,11,16,17,18,19]]
+#     LPS = row[[20,21,22,23]]
+#     CNT = row[[16,17,18,19]]
+#     t_statistic, p_value = ttest_rel(LPS, CNT)
+#     LPS_mean = LPS.mean()
+#     CNT_mean = CNT.mean()
+#     log2_fold_change = log2((LPS_mean+1) / (CNT_mean+1))
+#     log2_fold_changes.append(log2_fold_change)
+#     p_values_168.append(p_value)
+
+# # Perform FDR correction using the Benjamini-Hochberg method
+# _, pvals_corrected, _, _ = multipletests(p_values_168, method='fdr_bh')
+
+# for i in range(len(p_values_168)):
+#     if p_values_168[i] < 0.05:
+#         significant_trfs.append(s_rpm.index[i])
+
+# s_rpm['p_values'] = p_values_168
+# s_rpm['FDR_corrected_p_values'] = pvals_corrected
+# s_rpm['log2_fold_changes'] = log2_fold_changes
+
+# print(significant_trfs)
+# print(len(significant_trfs))
+# df = pd.read_csv('tRF_meta.csv', usecols=[0, 1, 2, 3,4], header=0, index_col=0)
+
+# significant_trfs_with_meta = s_rpm[s_rpm.index.isin(significant_trfs)]
+# significant_trfs_with_meta = pd.merge(significant_trfs_with_meta, df, left_index=True, right_index=True)
+# significant_trfs_with_meta.to_csv('placetaken_T/T_RPM_with_p_val&meta.csv')
 
 
-for index, row in s_rpm.iterrows():
-    for i in range(6):
-        sum = row[i*4] + row[i*4+1] + row[i*4+2] + row[i*4+3]
-        mean = sum/4
-        std = np.std([row[i*4], row[i*4+1], row[i*4+2], row[i*4+3]])
-        for j in range(4):
-            normalized_rpm.loc[index, i*4+j] = (row[i*4+j] - mean)/std
-
-normalized_rpm.to_csv('placetaken_T/T_RPM_zscore.csv')
-
-#TODO: in this code i did a normaliztion by the time points only. i need to so it correctly in each group of sex&time 
+#s_rpm.to_csv('placetaken_S/S_RPM_with_p_val.csv')
 
 
+#plotting the rpm vs time taken in the T ganglion
+t_rpm = pd.read_csv('placetaken_T/T_RPM_with_p_val&meta.csv', header=0, index_col=0)
 
+# Extract the 'log2_fold_changes' column for FDR correction
+log2_fold_changes_t = t_rpm['log2_fold_changes'].values
+
+p_values_t = t_rpm['p_values'].values
+
+p_values_t = [-log10(p) for p in p_values_t]
+
+# Automatically assign colors to each unique tRF type
+trf_types = t_rpm['locations']
+unique_trf_types = trf_types.unique()
+colors = sns.color_palette('hsv', len(unique_trf_types))
+color_mapping = dict(zip(unique_trf_types, colors))
+color_assigned = trf_types.map(color_mapping)
+
+plt.figure(figsize=(12,8))
+plt.scatter(log2_fold_changes_t, p_values_t, c=color_assigned, alpha=0.5)
+
+handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8) 
+           for trf in unique_trf_types]
+plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
+
+plt.xlabel('log2_fold_changes')
+plt.ylabel('-log10(P-value)')
+plt.title('log2_fold_changes vs. -log10(P-value) in the T ganglion')
+plt.savefig('log2_fold_changes_vs_-log10(P-value)_T_ganglion.png')
+plt.show()
+plt.close()
+
+#plotting the rpm vs time taken in the S ganglion
+
+s_rpm = pd.read_csv('placetaken_S/S_RPM_with_p_val&meta.csv', header=0, index_col=0)
+
+log2_fold_changes_s = s_rpm['log2_fold_changes'].values
+
+p_values_s = s_rpm['p_values'].values  
+
+p_values_s = [-log10(p) for p in p_values_s]
+
+trf_types = s_rpm['locations']
+unique_trf_types = trf_types.unique()
+colors = sns.color_palette('hsv', len(unique_trf_types))
+color_mapping = dict(zip(unique_trf_types, colors))
+color_assigned = trf_types.map(color_mapping)
+
+plt.figure(figsize=(12,8))
+plt.scatter(log2_fold_changes_s, p_values_s, c=color_assigned, alpha=0.5)
+
+handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8)
+              for trf in unique_trf_types]
+plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
+
+plt.xlabel('log2_fold_changes')
+plt.ylabel('-log10(P-value)')
+plt.title('log2_fold_changes vs. -log10(P-value) in the S ganglion')
+plt.savefig('log2_fold_changes_vs_-log10(P-value)_S_ganglion.png')
+plt.show()
+plt.close()
 
 
 
