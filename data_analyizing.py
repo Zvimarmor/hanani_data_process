@@ -10,6 +10,7 @@ from math import log10
 import seaborn as sns
 from scipy.stats import ttest_rel
 from math import log2
+from sklearn.model_selection import train_test_split
 
 #######Data Preprocessing########
 
@@ -55,24 +56,24 @@ from math import log2
 # numeric_columns = [col for col in Hanani_proccessed_data.columns if col not in non_numeric_columns]
 
 # cpm_all = pd.read_csv('cpm_all_samples.csv', header=0, index_col=0)
-# Hanani_proccessed_data_S = pd.read_csv('Hanani_proccessed_data_S.csv', header=0, index_col=0)
+#Hanani_proccessed_data_S = pd.read_csv('placetaken_S/S_RPM.csv', header=0, index_col=0)
 
 #######Plotting########
 
-# def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
-#     plt.figure(figsize=(10, 8))
-#     scatter = plt.scatter(data[:, x], data[:, y], c=labels, cmap='viridis')
-#     plt.xlabel(xlabel)
-#     plt.ylabel(ylabel)
-#     plt.title(title)
-#     # Create a legend
-#     unique_labels = np.unique(labels)
-#     handles = [plt.Line2D([0], [0], marker='o', color='w', label=label_mapping[label], 
-#                           markersize=10, markerfacecolor=plt.cm.viridis(i / max(unique_labels))) 
-#                for i, label in enumerate(unique_labels)]
-#     plt.legend(handles = handles, title='Treatment & Time Taken', loc='best')
-#     plt.show()
-#     plt.close()
+def plot_with_legend(data, x, y, labels, title, xlabel, ylabel, label_mapping):
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(data[:, x], data[:, y], c=labels, cmap='viridis')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    # Create a legend
+    unique_labels = np.unique(labels)
+    handles = [plt.Line2D([0], [0], marker='o', color='w', label=label_mapping[label], 
+                          markersize=10, markerfacecolor=plt.cm.viridis(i / max(unique_labels))) 
+               for i, label in enumerate(unique_labels)]
+    plt.legend(handles = handles, title='Treatment & Time Taken', loc='best')
+    plt.show()
+    plt.close()
 
 
 
@@ -553,66 +554,158 @@ def data_mapping(data):
 #s_rpm.to_csv('placetaken_S/S_RPM_with_p_val.csv')
 
 
-#plotting the rpm vs time taken in the T ganglion
-t_rpm = pd.read_csv('placetaken_T/T_RPM_with_p_val&meta.csv', header=0, index_col=0)
+# #plotting the rpm vs time taken in the T ganglion
+# t_rpm = pd.read_csv('placetaken_T/T_RPM_with_p_val&meta.csv', header=0, index_col=0)
 
-# Extract the 'log2_fold_changes' column for FDR correction
-log2_fold_changes_t = t_rpm['log2_fold_changes'].values
+# # Extract the 'log2_fold_changes' column for FDR correction
+# log2_fold_changes_t = t_rpm['log2_fold_changes'].values
 
-p_values_t = t_rpm['p_values'].values
+# p_values_t = t_rpm['p_values'].values
 
-p_values_t = [-log10(p) for p in p_values_t]
+# p_values_t = [-log10(p) for p in p_values_t]
 
-# Automatically assign colors to each unique tRF type
-trf_types = t_rpm['locations']
-unique_trf_types = trf_types.unique()
-colors = sns.color_palette('hsv', len(unique_trf_types))
-color_mapping = dict(zip(unique_trf_types, colors))
-color_assigned = trf_types.map(color_mapping)
+# # Automatically assign colors to each unique tRF type
+# trf_types = t_rpm['locations']
+# unique_trf_types = trf_types.unique()
+# colors = sns.color_palette('hsv', len(unique_trf_types))
+# color_mapping = dict(zip(unique_trf_types, colors))
+# color_assigned = trf_types.map(color_mapping)
 
-plt.figure(figsize=(12,8))
-plt.scatter(log2_fold_changes_t, p_values_t, c=color_assigned, alpha=0.5)
+# plt.figure(figsize=(12,8))
+# plt.scatter(log2_fold_changes_t, p_values_t, c=color_assigned, alpha=0.5)
 
-handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8) 
-           for trf in unique_trf_types]
-plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
+# handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8) 
+#            for trf in unique_trf_types]
+# plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
 
-plt.xlabel('log2_fold_changes')
-plt.ylabel('-log10(P-value)')
-plt.title('log2_fold_changes vs. -log10(P-value) in the T ganglion')
-plt.savefig('log2_fold_changes_vs_-log10(P-value)_T_ganglion.png')
-plt.show()
-plt.close()
+# plt.xlabel('log2_fold_changes')
+# plt.ylabel('-log10(P-value)')
+# plt.title('log2_fold_changes vs. -log10(P-value) in the T ganglion')
+# plt.savefig('log2_fold_changes_vs_-log10(P-value)_T_ganglion.png')
+# plt.show()
+# plt.close()
 
-#plotting the rpm vs time taken in the S ganglion
+# #plotting the rpm vs time taken in the S ganglion
 
-s_rpm = pd.read_csv('placetaken_S/S_RPM_with_p_val&meta.csv', header=0, index_col=0)
+# s_rpm = pd.read_csv('placetaken_S/S_RPM_with_p_val&meta.csv', header=0, index_col=0)
 
-log2_fold_changes_s = s_rpm['log2_fold_changes'].values
+# log2_fold_changes_s = s_rpm['log2_fold_changes'].values
 
-p_values_s = s_rpm['p_values'].values  
+# p_values_s = s_rpm['p_values'].values  
 
-p_values_s = [-log10(p) for p in p_values_s]
+# p_values_s = [-log10(p) for p in p_values_s]
 
-trf_types = s_rpm['locations']
-unique_trf_types = trf_types.unique()
-colors = sns.color_palette('hsv', len(unique_trf_types))
-color_mapping = dict(zip(unique_trf_types, colors))
-color_assigned = trf_types.map(color_mapping)
+# trf_types = s_rpm['locations']
+# unique_trf_types = trf_types.unique()
+# colors = sns.color_palette('hsv', len(unique_trf_types))
+# color_mapping = dict(zip(unique_trf_types, colors))
+# color_assigned = trf_types.map(color_mapping)
 
-plt.figure(figsize=(12,8))
-plt.scatter(log2_fold_changes_s, p_values_s, c=color_assigned, alpha=0.5)
+# plt.figure(figsize=(12,8))
+# plt.scatter(log2_fold_changes_s, p_values_s, c=color_assigned, alpha=0.5)
 
-handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8)
-              for trf in unique_trf_types]
-plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
+# handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color_mapping[trf], markersize=8)
+#               for trf in unique_trf_types]
+# plt.legend(handles, unique_trf_types, title="tRF Type", bbox_to_anchor=(1.05, 1), loc='best')
 
-plt.xlabel('log2_fold_changes')
-plt.ylabel('-log10(P-value)')
-plt.title('log2_fold_changes vs. -log10(P-value) in the S ganglion')
-plt.savefig('log2_fold_changes_vs_-log10(P-value)_S_ganglion.png')
-plt.show()
-plt.close()
+# plt.xlabel('log2_fold_changes')
+# plt.ylabel('-log10(P-value)')
+# plt.title('log2_fold_changes vs. -log10(P-value) in the S ganglion')
+# plt.savefig('log2_fold_changes_vs_-log10(P-value)_S_ganglion.png')
+# plt.show()
+# plt.close()
+
+##checking the percentage of each protein in the S and T ganglion##
+
+# s_edger = pd.read_csv('placetaken_S/EdgeR_S_ganglion.csv', header=0, index_col=0)
+# t_edger = pd.read_csv('placetaken_T/EdgeR_T_ganglion.csv', header=0, index_col=0)
+
+# protein_dict_s = dict()
+# protein_dict_t = dict()
+# for index, row in s_edger.iterrows():
+#     if row['trna'] not in protein_dict_s:
+#         protein_dict_s[row['trna']] = 1
+#     else:
+#         protein_dict_s[row['trna']] += 1
+
+# for index, row in t_edger.iterrows():
+#     if row['trna'] not in protein_dict_t:
+#         protein_dict_t[row['trna']] = 1
+#     else:
+#         protein_dict_t[row['trna']] += 1
+
+# s_len = s_edger.shape[0]
+# t_len = t_edger.shape[0]
+
+# print('S ganglion length:', s_len)
+# print('S ganglion:')
+# for protein in protein_dict_s:
+#     print('protein:', protein, 'num of times:', protein_dict_s[protein], 'percentage:', (protein_dict_s[protein] / (s_len)) * 100)
+
+# print('*************************************')
+
+# print('T ganglion length:', t_len)
+# print('T ganglion:')
+# for protein in protein_dict_t:
+#     print('protein:', protein, 'num of times:', protein_dict_t[protein], 'percentage:', (protein_dict_t[protein] / (t_len)) * 100)
+
+
+# Step 1: Read the CSV file
+t_rpm = pd.read_csv('placetaken_S/S_RPM_with_protein.csv', header=None, index_col=0)
+
+# Step 2: Set the first row as the column names, and the first column as the index
+t_rpm.columns = t_rpm.iloc[0]
+t_rpm = t_rpm[1:]
+t_rpm.index.name = 'Sample_ID'
+
+#goes over all the dataframe and convert all the values to float, except the first column and the first row
+for column in t_rpm.columns:
+    if column != 'Sample_ID':
+        t_rpm[column] = t_rpm[column].astype(float)
+
+df_transposed = t_rpm.T
+
+# Step 3: Group by the index (which were originally the column names) and sum
+df_summed = df_transposed.groupby(df_transposed.index).sum()
+
+#add the next row to the dataframe as
+row_to_add = ['Ester_24h_CNT_F_T_S29_R1_001.flexbar_q.fastq','Ester_24h_CNT_F_T_S30_R1_001.flexbar_q.fastq','Ester_24h_CNT_M_T_S41_R1_001.flexbar_q.fastq','Ester_24h_CNT_M_T_S42_R1_001.flexbar_q.fastq','Ester_24h_LPS_F_T_S31_R1_001.flexbar_q.fastq','Ester_24h_LPS_M_T_S43_R1_001.flexbar_q.fastq','Ester_24h_LPS_M_T_S44_R1_001.flexbar_q.fastq','Ester_24h_PS_F_T_S32_R1_001.flexbar_q.fastq','Ester_4h_CNT_F_T_S25_R1_001.flexbar_q.fastq','Ester_4h_CNT_F_T_S26_R1_001.flexbar_q.fastq','Ester_4h_CNT_M_T_S37_R1_001.flexbar_q.fastq','Ester_4h_CNT_M_T_S38_R1_001.flexbar_q.fastq','Ester_4h_LPS_F_T_S27_R1_001.flexbar_q.fastq','Ester_4h_LPS_F_T_S28_R1_001.flexbar_q.fastq','Ester_4h_LPS_M_T_S39_R1_001.flexbar_q.fastq','Ester_4h_LPS_M_T_S40_R1_001.flexbar_q.fastq','Ester_7d_CNT_F_T_S33_R1_001.flexbar_q.fastq','Ester_7d_CNT_F_T_S34_R1_001.flexbar_q.fastq','Ester_7d_CNT_M_T_S45_R1_001.flexbar_q.fastq','Ester_7d_CNT_M_T_S46_R1_001.flexbar_q.fastq','Ester_7d_LPS_F_T_S35_R1_001.flexbar_q.fastq','Ester_7d_LPS_F_T_S36_R1_001.flexbar_q.fastq','Ester_7d_LPS_M_T_S47_R1_001.flexbar_q.fastq','Ester_7d_LPS_M_T_S48_R1_001.flexbar_q.fastq']
+
+# Step 4: Transpose back to the original orientation
+df_result = df_summed.T
+
+# Step 5: Save the result to a new CSV file
+df_result.to_csv('placetaken_S/S_RPM_with_protein_summed.csv', index=True)
+
+
+
+
+
+
+            
+
+
+
+                
+
+
+
+# colors = ['blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red']
+
+# #preform pca 
+# pca = PCA(n_components=2)
+# pca_transformed = pca.fit_transform(t_rpm.drop('Treatment', axis=1))
+
+# #plotting the pca
+# plt.figure(figsize=(12,8))
+# plt.scatter(pca_transformed[:, 0], pca_transformed[:, 1], c=colors, cmap='viridis')
+# plt.xlabel('PC1')
+# plt.ylabel('PC2')
+# plt.title('PCA: PC1 vs PC2')
+# plt.show()
+# plt.close()
+
+
 
 
 
