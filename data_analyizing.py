@@ -650,60 +650,84 @@ def data_mapping(data):
 #     print('protein:', protein, 'num of times:', protein_dict_t[protein], 'percentage:', (protein_dict_t[protein] / (t_len)) * 100)
 
 
-# Step 1: Read the CSV file
-t_rpm = pd.read_csv('placetaken_S/S_RPM_with_protein.csv', header=None, index_col=0)
+# s_rpm_with_protein_sum = pd.read_csv('placetaken_T/T_RPM_with_protein_summed.csv', header=0, index_col=0)
 
-# Step 2: Set the first row as the column names, and the first column as the index
-t_rpm.columns = t_rpm.iloc[0]
-t_rpm = t_rpm[1:]
-t_rpm.index.name = 'Sample_ID'
+# row_to_drop = s_rpm_with_protein_sum[s_rpm_with_protein_sum['Time_taken'] == 7].index
+# s_rpm_with_protein_sum = s_rpm_with_protein_sum.drop(row_to_drop)
 
-#goes over all the dataframe and convert all the values to float, except the first column and the first row
-for column in t_rpm.columns:
-    if column != 'Sample_ID':
-        t_rpm[column] = t_rpm[column].astype(float)
+# X,y = s_rpm_with_protein_sum.drop('Treatment', axis=1), s_rpm_with_protein_sum['Treatment']
 
-df_transposed = t_rpm.T
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=52)
 
-# Step 3: Group by the index (which were originally the column names) and sum
-df_summed = df_transposed.groupby(df_transposed.index).sum()
+# #preform knn classification
+# from sklearn.neighbors import KNeighborsClassifier
 
-#add the next row to the dataframe as
-row_to_add = ['Ester_24h_CNT_F_T_S29_R1_001.flexbar_q.fastq','Ester_24h_CNT_F_T_S30_R1_001.flexbar_q.fastq','Ester_24h_CNT_M_T_S41_R1_001.flexbar_q.fastq','Ester_24h_CNT_M_T_S42_R1_001.flexbar_q.fastq','Ester_24h_LPS_F_T_S31_R1_001.flexbar_q.fastq','Ester_24h_LPS_M_T_S43_R1_001.flexbar_q.fastq','Ester_24h_LPS_M_T_S44_R1_001.flexbar_q.fastq','Ester_24h_PS_F_T_S32_R1_001.flexbar_q.fastq','Ester_4h_CNT_F_T_S25_R1_001.flexbar_q.fastq','Ester_4h_CNT_F_T_S26_R1_001.flexbar_q.fastq','Ester_4h_CNT_M_T_S37_R1_001.flexbar_q.fastq','Ester_4h_CNT_M_T_S38_R1_001.flexbar_q.fastq','Ester_4h_LPS_F_T_S27_R1_001.flexbar_q.fastq','Ester_4h_LPS_F_T_S28_R1_001.flexbar_q.fastq','Ester_4h_LPS_M_T_S39_R1_001.flexbar_q.fastq','Ester_4h_LPS_M_T_S40_R1_001.flexbar_q.fastq','Ester_7d_CNT_F_T_S33_R1_001.flexbar_q.fastq','Ester_7d_CNT_F_T_S34_R1_001.flexbar_q.fastq','Ester_7d_CNT_M_T_S45_R1_001.flexbar_q.fastq','Ester_7d_CNT_M_T_S46_R1_001.flexbar_q.fastq','Ester_7d_LPS_F_T_S35_R1_001.flexbar_q.fastq','Ester_7d_LPS_F_T_S36_R1_001.flexbar_q.fastq','Ester_7d_LPS_M_T_S47_R1_001.flexbar_q.fastq','Ester_7d_LPS_M_T_S48_R1_001.flexbar_q.fastq']
+# model = KNeighborsClassifier(n_neighbors=3)
+# model.fit(X_train, y_train)
 
-# Step 4: Transpose back to the original orientation
-df_result = df_summed.T
+# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
 
-# Step 5: Save the result to a new CSV file
-df_result.to_csv('placetaken_S/S_RPM_with_protein_summed.csv', index=True)
+# #preform SVM classification
+# from sklearn.svm import SVC
+
+# model = SVC(kernel='linear')
+# model.fit(X_train, y_train)
+
+# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
+
+# #preform Random Forest classification
+# from sklearn.ensemble import RandomForestClassifier
+
+# model = RandomForestClassifier(n_estimators=10)
+# model.fit(X_train, y_train)
+
+# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
+
+# #preform Gradient Boosting classification
+# from sklearn.ensemble import GradientBoostingClassifier
+
+# model = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)
+# model.fit(X_train, y_train)
+
+# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
 
 
-
-
-
-
-            
-
-
-
+def getLucky(s, k):
+        """
+        :type s: str
+        :type k: int
+        :rtype: int
+        """
+        s_num = []
+        length = len(s)
+        for i in range(length):
+            ascii_val = ord(s[i]) - 96
+            s_num.append(ascii_val)
+        
+        for i in range(k-1):
+            sum_s = 0
+            for num in range(len(s_num)):
+                print('s_num:', s_num)
+                sum_s += sum(int(digit) for digit in str(s_num[num]))
+            s_num = []
+            for i in range(len(str(sum_s))):
+                s_num.append(str(sum_s)[i])
                 
+        return sum(int(x) for x in s_num)
+
+s= "hvmhoasabaymnmsd"
+print(getLucky(s, k=1))
 
 
 
-# colors = ['blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red','blue','blue','blue','blue','red','red','red','red']
 
-# #preform pca 
-# pca = PCA(n_components=2)
-# pca_transformed = pca.fit_transform(t_rpm.drop('Treatment', axis=1))
 
-# #plotting the pca
-# plt.figure(figsize=(12,8))
-# plt.scatter(pca_transformed[:, 0], pca_transformed[:, 1], c=colors, cmap='viridis')
-# plt.xlabel('PC1')
-# plt.ylabel('PC2')
-# plt.title('PCA: PC1 vs PC2')
-# plt.show()
-# plt.close()
+
+
+
+
+
+
 
 
 
