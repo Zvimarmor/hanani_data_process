@@ -649,79 +649,128 @@ def data_mapping(data):
 # for protein in protein_dict_t:
 #     print('protein:', protein, 'num of times:', protein_dict_t[protein], 'percentage:', (protein_dict_t[protein] / (t_len)) * 100)
 
+conclusion_txt_file = open('conclusion.txt', 'w')
 
-# s_rpm_with_protein_sum = pd.read_csv('placetaken_T/T_RPM_with_protein_summed.csv', header=0, index_col=0)
+s_4_significant = pd.read_csv('placetaken_S/sg_S4_Genes (1).csv', header=0, index_col=0)
+s_24_significant = pd.read_csv('placetaken_S/sg_S24_Genes (1).csv', header=0, index_col=0)
+s_168_significant = pd.read_csv('placetaken_S/sg_S168_Genes (1).csv', header=0, index_col=0)
+t_4_significant = pd.read_csv('placetaken_T/sg_T4_Genes (1).csv', header=0, index_col=0)
+t_24_significant = pd.read_csv('placetaken_T/sg_T24_Genes (1).csv', header=0, index_col=0)
+t_168_significant = pd.read_csv('placetaken_T/sg_T168_Genes (1).csv', header=0, index_col=0)
 
-# row_to_drop = s_rpm_with_protein_sum[s_rpm_with_protein_sum['Time_taken'] == 7].index
-# s_rpm_with_protein_sum = s_rpm_with_protein_sum.drop(row_to_drop)
+s_4_significant = s_4_significant[s_4_significant['PValue'] < 0.05]
+s_24_significant = s_24_significant[s_24_significant['PValue'] < 0.05]
+s_168_significant = s_168_significant[s_168_significant['PValue'] < 0.05]
+t_4_significant = t_4_significant[t_4_significant['PValue'] < 0.05]
+t_24_significant = t_24_significant[t_24_significant['PValue'] < 0.05]
+t_168_significant = t_168_significant[t_168_significant['PValue'] < 0.05]
 
-# X,y = s_rpm_with_protein_sum.drop('Treatment', axis=1), s_rpm_with_protein_sum['Treatment']
-
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=52)
-
-# #preform knn classification
-# from sklearn.neighbors import KNeighborsClassifier
-
-# model = KNeighborsClassifier(n_neighbors=3)
-# model.fit(X_train, y_train)
-
-# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
-
-# #preform SVM classification
-# from sklearn.svm import SVC
-
-# model = SVC(kernel='linear')
-# model.fit(X_train, y_train)
-
-# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
-
-# #preform Random Forest classification
-# from sklearn.ensemble import RandomForestClassifier
-
-# model = RandomForestClassifier(n_estimators=10)
-# model.fit(X_train, y_train)
-
-# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
-
-# #preform Gradient Boosting classification
-# from sklearn.ensemble import GradientBoostingClassifier
-
-# model = GradientBoostingClassifier(n_estimators=100, learning_rate=1.0, max_depth=1, random_state=0)
-# model.fit(X_train, y_train)
-
-# print('accuracy:', model.score(X_test, y_test), 'correct predictions:', model.score(X_test, y_test) * X_test.shape[0], 'out of:', X_test.shape[0])
+s_4_significant = s_4_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
+s_24_significant = s_24_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
+s_168_significant = s_168_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
+t_4_significant = t_4_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
+t_24_significant = t_24_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
+t_168_significant = t_168_significant.drop(columns=["LR","log2FC","seq","details","len","codon","gene","origin","isSg"])
 
 
-def getLucky(s, k):
-        """
-        :type s: str
-        :type k: int
-        :rtype: int
-        """
-        s_num = []
-        length = len(s)
-        for i in range(length):
-            ascii_val = ord(s[i]) - 96
-            s_num.append(ascii_val)
-        
-        for i in range(k-1):
-            sum_s = 0
-            for num in range(len(s_num)):
-                print('s_num:', s_num)
-                sum_s += sum(int(digit) for digit in str(s_num[num]))
-            s_num = []
-            for i in range(len(str(sum_s))):
-                s_num.append(str(sum_s)[i])
-                
-        return sum(int(x) for x in s_num)
+conclusion_txt_file.write('S Ganglion:' + '\n'+ '\n')
+conclusion_txt_file.write('S ganglion 4h significant:'+'\n' + str(s_4_significant) + '\n'+'len:' + str(len(s_4_significant)) + '\n' + '\n')
+conclusion_txt_file.write('S ganglion 24h significant:'+'\n' + str(s_24_significant) + '\n'+'len:' + str(len(s_24_significant)) + '\n'+ '\n')
+conclusion_txt_file.write('S ganglion 168h significant:'+'\n' + str(s_168_significant) + '\n'+'len:' + str(len(s_168_significant)) + '\n'+ '\n')
 
-s= "hvmhoasabaymnmsd"
-print(getLucky(s, k=1))
+conclusion_txt_file.write('T Ganglion:' + '\n'+ '\n')
+conclusion_txt_file.write('T ganglion 4h significant:'+'\n' + str(t_4_significant) + '\n'+'len:' + str(len(t_4_significant)) + '\n'+ '\n')
+conclusion_txt_file.write('T ganglion 24h significant:'+'\n' + str(t_24_significant) + '\n'+'len:' + str(len(t_24_significant)) + '\n'+ '\n')
+conclusion_txt_file.write('T ganglion 168h significant:'+'\n' + str(t_168_significant) + '\n'+'len:' + str(len(t_168_significant)) + '\n'+ '\n')
 
 
+conclusion_txt_file.write('*'*20 + '\n')
+
+Tganglion_4_24_significant = []
+Tganglion_alltimes_significant = []
+for trf in s_4_significant['trf']:
+    if trf in t_24_significant['trf'].values and trf in t_168_significant['trf'].values:
+        Tganglion_alltimes_significant.append(trf)
+    if trf in t_24_significant['trf'].values:
+        Tganglion_4_24_significant.append(trf)
+
+conclusion_txt_file.write('T ganglion 4 and 24 significant:' + str(Tganglion_4_24_significant) + '\n')
+conclusion_txt_file.write('T ganglion all times significant:' + str(Tganglion_alltimes_significant)+ '\n'+ '\n')
+
+Sganglion_alltimes_significant = []
+Sganglion_4_24_significant = []
+for trf in s_4_significant['trf']:
+    if trf in s_24_significant['trf'].values and trf in s_168_significant['trf'].values:
+        Sganglion_alltimes_significant.append(trf)
+    if trf in s_24_significant['trf'].values:
+        Sganglion_4_24_significant.append(trf)
+
+conclusion_txt_file.write('S ganglion 4 and 24 significant:' + str(Sganglion_4_24_significant) + '\n')
+conclusion_txt_file.write('S ganglion all times significant:' + str(Sganglion_alltimes_significant) +'\n')
+conclusion_txt_file.write('*'*20 + '\n')
+
+for trf in Tganglion_4_24_significant:
+    if trf in Sganglion_4_24_significant:
+        conclusion_txt_file.write('tRFs significant in both S and T ganglion in 4 and 24 hours:' + str(trf) + '\n')
+
+for trf in Tganglion_alltimes_significant:
+    if trf in Sganglion_alltimes_significant:
+        conclusion_txt_file.write('tRFs significant in both S and T ganglion in all times:' + str(trf) + '\n')
+
+conclusion_txt_file.close()
+
+# #plotting the logfc vs time taken in the S ganglion
+yaxis= [s_4_significant['logFC'] , s_24_significant['logFC'], s_168_significant['logFC']]
+yaxis = [np.log2(np.exp(item)) for sublist in yaxis for item in sublist]
+xaxis = ['4h'] * 33 + ['24h'] * 14 + ['7d'] * 36
+
+# Convert categorical x-axis labels to numerical values
+x_values = np.array([0 if x == '4h' else 1 if x == '24h' else 2 for x in xaxis])
+
+# Add jitter to x-values
+jitter = np.random.uniform(-0.1, 0.1, size=len(x_values))  # Adjust jitter range if needed
+x_values_jittered = x_values + jitter
+
+# Colors list and proteins
+colors = []
+proteins = [s_4_significant['trna'], s_24_significant['trna'], s_168_significant['trna']]
+possible_colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 'cyan', 
+                   'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 'silver', 
+                   'gray', 'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 
+                   'cyan', 'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 
+                   'silver', 'gray']
+
+# trf_type_color_mapping = {
+#     'i-tRF': '#1f77b4',  # Soft blue
+#     '3-tRF': '#2ca02c',  # Soft green
+#     '5-tRF': '#ff7f0e',  # Soft orange
+#     '5-half': '#d62728'  # Soft red
+# }
 
 
+#Create a colormap for the proteins
+protein_color_dict = dict()
+for protein_series in proteins:
+    for protein in protein_series:
+        if protein not in protein_color_dict:
+            protein_color_dict[protein] = possible_colors.pop()
+        colors.append(protein_color_dict[protein])
 
+# Scatter plot with jittered x-axis values
+plt.scatter(x_values_jittered, yaxis, c=colors)
+plt.xlabel('Time taken')
+plt.ylabel('logFC')
+
+# Creating the legend
+color_handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=protein_color_dict[protein], markersize=8) 
+                 for protein in protein_color_dict]
+plt.legend(color_handles, protein_color_dict.keys(), title="Type of Trf", bbox_to_anchor=(1.05, 1), loc='best')
+
+plt.title('logFC vs Time taken in the S ganglion')
+plt.xticks([0, 1, 2], ['4h', '24h', '7d'])
+
+plt.show()
+plt.close()
 
 
 
