@@ -705,6 +705,7 @@ for trf in s_4_significant['trf']:
     if trf in s_24_significant['trf'].values:
         Sganglion_4_24_significant.append(trf)
 
+
 conclusion_txt_file.write('S ganglion 4 and 24 significant:' + str(Sganglion_4_24_significant) + '\n')
 conclusion_txt_file.write('S ganglion all times significant:' + str(Sganglion_alltimes_significant) +'\n')
 conclusion_txt_file.write('*'*20 + '\n')
@@ -719,58 +720,204 @@ for trf in Tganglion_alltimes_significant:
 
 conclusion_txt_file.close()
 
-# #plotting the logfc vs time taken in the S ganglion
-yaxis= [s_4_significant['logFC'] , s_24_significant['logFC'], s_168_significant['logFC']]
-yaxis = [np.log2(np.exp(item)) for sublist in yaxis for item in sublist]
-xaxis = ['4h'] * 33 + ['24h'] * 14 + ['7d'] * 36
+## plotting a ven diagram for the significant trfs in the T ganglion##
 
-# Convert categorical x-axis labels to numerical values
-x_values = np.array([0 if x == '4h' else 1 if x == '24h' else 2 for x in xaxis])
+from matplotlib_venn import venn2, venn3
 
-# Add jitter to x-values
-jitter = np.random.uniform(-0.1, 0.1, size=len(x_values))  # Adjust jitter range if needed
-x_values_jittered = x_values + jitter
+s_4_significant = s_4_significant[s_4_significant['PValue'] < 0.05]
+s_24_significant = s_24_significant[s_24_significant['PValue'] < 0.05]
+s_168_significant = s_168_significant[s_168_significant['PValue'] < 0.05]
+t_4_significant = t_4_significant[t_4_significant['PValue'] < 0.05]
+t_24_significant = t_24_significant[t_24_significant['PValue'] < 0.05]
+t_168_significant = t_168_significant[t_168_significant['PValue'] < 0.05]
 
-# Colors list and proteins
-colors = []
-proteins = [s_4_significant['trna'], s_24_significant['trna'], s_168_significant['trna']]
-possible_colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 'cyan', 
-                   'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 'silver', 
-                   'gray', 'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 
-                   'cyan', 'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 
-                   'silver', 'gray']
+all_significant_data_s = pd.concat([s_4_significant, s_24_significant, s_168_significant])
+all_significant_data_t = pd.concat([t_4_significant, t_24_significant, t_168_significant])
 
-# trf_type_color_mapping = {
-#     'i-tRF': '#1f77b4',  # Soft blue
-#     '3-tRF': '#2ca02c',  # Soft green
-#     '5-tRF': '#ff7f0e',  # Soft orange
-#     '5-half': '#d62728'  # Soft red
-# }
+s_4_significant = s_4_significant['trf']
+s_24_significant = s_24_significant['trf']
+s_168_significant = s_168_significant['trf']
+t_4_significant = t_4_significant['trf']
+t_24_significant = t_24_significant['trf']
+t_168_significant = t_168_significant['trf']
+
+s_4_significant = set(s_4_significant)
+s_24_significant = set(s_24_significant)
+s_168_significant = set(s_168_significant)
+t_4_significant = set(t_4_significant)
+t_24_significant = set(t_24_significant)
+t_168_significant = set(t_168_significant)
+
+all_s = s_4_significant | s_24_significant | s_168_significant
+all_t = t_4_significant | t_24_significant | t_168_significant
+
+christof_data = pd.read_csv('Blood_tRF_christof.csv', header=0, index_col=0)
+christof_data = christof_data[christof_data['pvalue'] < 0.05]
+#christof_data = christof_data['trf']
+christof_data_set = set(christof_data['trf'])
+
+plt.figure(figsize=(30, 30))
+#venn = venn3([s_4_significant, s_24_significant, s_168_significant], set_labels=('4h', '24h', '168h'))
+#venn = venn3([s_4_significant, t_24_significant, t_168_significant], set_labels=('4h', '24h', '168h'))
+venn = venn3([all_s, all_t, christof_data_set], set_labels=('S ganglion', 'T ganglion', 'Christof data'))
 
 
-#Create a colormap for the proteins
-protein_color_dict = dict()
-for protein_series in proteins:
-    for protein in protein_series:
-        if protein not in protein_color_dict:
-            protein_color_dict[protein] = possible_colors.pop()
-        colors.append(protein_color_dict[protein])
+common_trfs = all_s & all_t & christof_data_set
+sandt = all_s & all_t
+sandc = all_s & christof_data_set
+tandc = all_t & christof_data_set
+labels_for_trfs = dict()
 
-# Scatter plot with jittered x-axis values
-plt.scatter(x_values_jittered, yaxis, c=colors)
-plt.xlabel('Time taken')
-plt.ylabel('logFC')
+# Create conditions for coloring
+common_trf_labels = ''
+for trf in common_trfs:
+    # Find the corresponding rows for the TRF in both sets
+    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
 
-# Creating the legend
-color_handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=protein_color_dict[protein], markersize=8) 
-                 for protein in protein_color_dict]
-plt.legend(color_handles, protein_color_dict.keys(), title="Type of Trf", bbox_to_anchor=(1.05, 1), loc='best')
+    # Check the conditions for coloring
 
-plt.title('logFC vs Time taken in the S ganglion')
-plt.xticks([0, 1, 2], ['4h', '24h', '7d'])
+    if s_value > 0 and t_value > 0 and christof_value > 0:
+        status = 'Positive'
+    elif s_value > 0 and t_value < 0 and christof_value > 0:
+        status = 's+ t- christof+'
+    elif s_value > 0 and t_value > 0 and christof_value < 0:
+        status = 's+ t+ christof-'
+    elif s_value > 0 and t_value < 0 and christof_value < 0:
+        status = 's+ t- christof-'
+    elif s_value < 0 and t_value > 0 and christof_value > 0:
+        status = 's- t+ christof+'
+    elif s_value < 0 and t_value < 0 and christof_value > 0:
+        status = 's- t- christof+'
+    elif s_value < 0 and t_value > 0 and christof_value < 0:
+        status = 's- t+ christof-'
+    elif s_value < 0 and t_value < 0 and christof_value < 0:
+        status = 'Negative'
 
+    common_trf_labels += f'{trf} ({status})\n'
+    
+venn.get_label_by_id('111').set_text(common_trf_labels)
+
+sandt = sandt - common_trfs
+sandt_labels = ''
+for trf in sandt:
+    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+    if s_value > 0 and t_value > 0:
+        status = 'Positive'
+    elif s_value > 0 and t_value < 0:
+        status = 's+ t-'
+    elif s_value < 0 and t_value > 0:
+        status = 's- t+'
+    elif s_value < 0 and t_value < 0:
+        status = 'Negative'
+
+    sandt_labels += f'{trf} ({status})\n'
+
+venn.get_label_by_id('110').set_text(sandt_labels)
+    
+sandc = sandc - common_trfs
+sandc_labels = ''
+for trf in sandc:
+    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
+    if s_value > 0 and christof_value > 0:
+        status = 'Positive'
+    elif s_value > 0 and christof_value < 0:
+        status = 's+ christof-'
+    elif s_value < 0 and christof_value > 0:
+        status = 's- christof+'
+    elif s_value < 0 and christof_value < 0:
+        status = 'Negative'
+    sandc_labels += f'{trf} ({status})\n'
+
+venn.get_label_by_id('101').set_text(sandc_labels)
+
+tandc = tandc - common_trfs
+tandc_labels = ''
+for trf in tandc:
+    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
+    if t_value > 0 and christof_value > 0:
+        status = 'Positive'
+    elif t_value > 0 and christof_value < 0:
+        status = 't+ christof-'
+    elif t_value < 0 and christof_value > 0:
+        status = 't- christof+'
+    elif t_value < 0 and christof_value < 0:
+        status = 'Negative'
+    tandc_labels += f'{trf} ({status})\n'
+
+venn.get_label_by_id('011').set_text(tandc_labels)  
+
+# Adjust the font size
+for label in venn.set_labels:  # Set font size for set labels (Set 1, Set 2, Set 3)
+    label.set_fontsize(12)
+    
+for label in venn.subset_labels:  # Set font size for subset labels (numbers or elements inside circles)
+    if label:
+        label.set_fontsize(6)  # Adjust font size for the elements   # All sets
+
+plt.title('Venn Diagram of Significant tRFs in the S and T ganglion and Christof Blood tRFs')
 plt.show()
+#plt.savefig('Venn_diagram_S_T_Christof_Blood.svg', format='svg')
 plt.close()
+
+
+
+# # #plotting the logfc vs time taken in the S ganglion
+# yaxis= [s_4_significant['logFC'] , s_24_significant['logFC'], s_168_significant['logFC']]
+# yaxis = [np.log2(np.exp(item)) for sublist in yaxis for item in sublist]
+# xaxis = ['4h'] * 33 + ['24h'] * 14 + ['7d'] * 36
+
+# # Convert categorical x-axis labels to numerical values
+# x_values = np.array([0 if x == '4h' else 1 if x == '24h' else 2 for x in xaxis])
+
+# # Add jitter to x-values
+# jitter = np.random.uniform(-0.1, 0.1, size=len(x_values))  # Adjust jitter range if needed
+# x_values_jittered = x_values + jitter
+
+# # Colors list and proteins
+# colors = []
+# proteins = [s_4_significant['trna'], s_24_significant['trna'], s_168_significant['trna']]
+# possible_colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 'cyan', 
+#                    'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 'silver', 
+#                    'gray', 'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'black', 'pink', 'brown', 
+#                    'cyan', 'magenta', 'grey', 'lime', 'olive', 'teal', 'navy', 'maroon', 'aqua', 'fuchsia', 
+#                    'silver', 'gray']
+
+# # trf_type_color_mapping = {
+# #     'i-tRF': '#1f77b4',  # Soft blue
+# #     '3-tRF': '#2ca02c',  # Soft green
+# #     '5-tRF': '#ff7f0e',  # Soft orange
+# #     '5-half': '#d62728'  # Soft red
+# # }
+
+
+# #Create a colormap for the proteins
+# protein_color_dict = dict()
+# for protein_series in proteins:
+#     for protein in protein_series:
+#         if protein not in protein_color_dict:
+#             protein_color_dict[protein] = possible_colors.pop()
+#         colors.append(protein_color_dict[protein])
+
+# # Scatter plot with jittered x-axis values
+# plt.scatter(x_values_jittered, yaxis, c=colors)
+# plt.xlabel('Time taken')
+# plt.ylabel('logFC')
+
+# # Creating the legend
+# color_handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=protein_color_dict[protein], markersize=8) 
+#                  for protein in protein_color_dict]
+# plt.legend(color_handles, protein_color_dict.keys(), title="Type of Trf", bbox_to_anchor=(1.05, 1), loc='best')
+
+# plt.title('logFC vs Time taken in the S ganglion')
+# plt.xticks([0, 1, 2], ['4h', '24h', '7d'])
+
+# plt.show()
+# plt.close()
 
 
 
