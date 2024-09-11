@@ -1,7 +1,7 @@
 S Ganglion:
 
 S ganglion 4h significant:
-                trf     logFC     logCPM         LR        PValue           FDR    log2FC        isSg              mir
+                trf     logFC     logCPM         LR        PValue           FDR    log2FC        isSg              miR
 0    mmu-miR-206-3p -3.163005   9.741427  45.895776  1.247146e-11  5.724399e-09 -4.562779  Sgnificant   mmu-miR-206-3p
 1   mmu-miR-200a-3p -2.219382   6.175933  43.268354  4.772400e-11  1.095266e-08 -3.201560  Sgnificant  mmu-miR-200a-3p
 2   mmu-miR-200c-3p -2.480384   6.495843  39.515850  3.254074e-10  4.978734e-08 -3.578066  Sgnificant  mmu-miR-200c-3p
@@ -43,7 +43,7 @@ S ganglion 4h significant:
 len:38
 
 S ganglion 24h significant:
-                 trf     logFC     logCPM          LR        PValue           FDR    log2FC        isSg               mir
+                 trf     logFC     logCPM          LR        PValue           FDR    log2FC        isSg               miR
 0     mmu-miR-155-5p  3.070036   6.292612  255.251156  1.860745e-57  8.522210e-55  4.428666  Sgnificant    mmu-miR-155-5p
 1     mmu-miR-183-5p -2.835013  11.083909  212.695204  3.547041e-48  8.122723e-46 -4.089635  Sgnificant    mmu-miR-183-5p
 2     mmu-miR-21a-5p  2.123803  14.137802  171.868640  2.891011e-39  3.767398e-37  3.063682  Sgnificant    mmu-miR-21a-5p
@@ -60,7 +60,7 @@ S ganglion 24h significant:
 len:64
 
 S ganglion 168h significant:
-                  trf     logFC     logCPM         LR        PValue       FDR    log2FC        isSg                mir
+                  trf     logFC     logCPM         LR        PValue       FDR    log2FC        isSg                miR
 0     mmu-miR-200a-3p  4.216281   8.608232  27.809866  1.338419e-07  0.000060  6.082177  Sgnificant    mmu-miR-200a-3p
 1     mmu-miR-133a-3p  3.569285   6.385774  26.118935  3.210204e-07  0.000072  5.148855  Sgnificant    mmu-miR-133a-3p
 2     mmu-miR-200c-3p  4.067479   8.516684  23.405089  1.312309e-06  0.000148  5.867524  Sgnificant    mmu-miR-200c-3p
@@ -125,7 +125,7 @@ len:59
 T Ganglion:
 
 T ganglion 4h significant:
-                  trf     logFC     logCPM         LR        PValue           FDR    log2FC        isSg                mir
+                  trf     logFC     logCPM         LR        PValue           FDR    log2FC        isSg                miR
 0        mmu-miR-451a -0.973149   9.601996  97.685910  4.902989e-23  2.368144e-20 -1.403812  Sgnificant       mmu-miR-451a
 1      mmu-miR-155-5p  1.364362   3.891097  59.117994  1.484951e-14  3.586158e-12  1.968154  Sgnificant     mmu-miR-155-5p
 2     mmu-miR-135a-5p  1.221305   3.806409  45.354418  1.644167e-11  2.647108e-09  1.761787  Sgnificant    mmu-miR-135a-5p
@@ -178,7 +178,7 @@ T ganglion 4h significant:
 len:49
 
 T ganglion 24h significant:
-                trf     logFC     logCPM          LR        PValue           FDR    log2FC        isSg              mir
+                trf     logFC     logCPM          LR        PValue           FDR    log2FC        isSg              miR
 0      mmu-miR-6538  4.064920   3.662401  172.512202  2.091700e-39  1.037483e-36  5.863831  Sgnificant     mmu-miR-6538
 1    mmu-miR-375-3p  1.941743   9.626939  138.835469  4.784948e-32  1.186667e-29  2.801053  Sgnificant   mmu-miR-375-3p
 2    mmu-miR-155-5p  1.928736   4.397788   88.987352  3.973449e-21  6.569435e-19  2.782290  Sgnificant   mmu-miR-155-5p
@@ -216,7 +216,7 @@ T ganglion 24h significant:
 len:34
 
 T ganglion 168h significant:
-                   trf     logFC    logCPM          LR        PValue           FDR    log2FC        isSg                mir
+                   trf     logFC    logCPM          LR        PValue           FDR    log2FC        isSg                miR
 0      mmu-miR-135a-5p -3.504064  5.656606  314.673166  2.095227e-70  1.047614e-67 -5.054772  Sgnificant    mmu-miR-135a-5p
 1    mmu-miR-219a-2-3p -2.629642  9.171967  248.990140  4.311218e-56  1.077804e-53 -3.793378  Sgnificant  mmu-miR-219a-2-3p
 2      mmu-miR-1298-5p -2.383531  6.353010  180.098804  4.611554e-41  7.685924e-39 -3.438352  Sgnificant    mmu-miR-1298-5p
