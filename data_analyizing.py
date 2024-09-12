@@ -652,12 +652,12 @@ def data_mapping(data):
 # conclusion_txt_file = open('conclusion_miRNA.txt', 'w')
 conclusion_txt_file = open('Garbage.txt', 'w')
 
-s_4_significant = pd.read_csv('miRNA/placetaken_S/sg_S4_miRs.csv', header=0, index_col=None)
-s_24_significant = pd.read_csv('miRNA/placetaken_S/sg_S24_miRs.csv', header=0, index_col=None)
-s_168_significant = pd.read_csv('miRNA/placetaken_S/sg_S168_miRs.csv', header=0, index_col=None)
-t_4_significant = pd.read_csv('miRNA/placetaken_T/sg_T4_miRs.csv', header=0, index_col=None)
-t_24_significant = pd.read_csv('miRNA/placetaken_T/sg_T24_miRs.csv', header=0, index_col=None)
-t_168_significant = pd.read_csv('miRNA/placetaken_T/sg_T168_miRs.csv', header=0, index_col=None)
+s_4_significant = pd.read_csv('Trfs/placetaken_S/sg_S4_Genes (1).csv', header=0, index_col=None)
+s_24_significant = pd.read_csv('Trfs/placetaken_S/sg_S24_Genes (1).csv', header=0, index_col=None)
+s_168_significant = pd.read_csv('Trfs/placetaken_S/sg_S168_Genes (1).csv', header=0, index_col=None)
+t_4_significant = pd.read_csv('Trfs/placetaken_T/sg_T4_Genes (1).csv', header=0, index_col=None)
+t_24_significant = pd.read_csv('Trfs/placetaken_T/sg_T24_Genes (1).csv', header=0, index_col=None)
+t_168_significant = pd.read_csv('Trfs/placetaken_T/sg_T168_Genes (1).csv', header=0, index_col=None)
 
 s_4_significant = s_4_significant[s_4_significant['PValue'] < 0.05]
 s_24_significant = s_24_significant[s_24_significant['PValue'] < 0.05]
@@ -753,106 +753,134 @@ t_168_significant = set(t_168_significant)
 all_s = s_4_significant | s_24_significant | s_168_significant
 all_t = t_4_significant | t_24_significant | t_168_significant
 
-christof_data = pd.read_csv('miRNA/keras_miRNA_christof.csv', header=0, index_col=0)
-christof_data = christof_data[christof_data['pvalue'] < 0.05]
-#christof_data = christof_data['trf']
-christof_data_set = set(christof_data['trf'])
+# christof_data = pd.read_csv('miRNA/keras_miRNA_christof.csv', header=0, index_col=0)
+# christof_data = christof_data[christof_data['pvalue'] < 0.05]
+# #christof_data = christof_data['trf']
+# christof_data_set = set(christof_data['trf'])
 
 plt.figure(figsize=(30, 30))
-#venn = venn3([s_4_significant, s_24_significant, s_168_significant], set_labels=('4h', '24h', '168h'))
-#venn = venn3([s_4_significant, t_24_significant, t_168_significant], set_labels=('4h', '24h', '168h'))
+venn = venn3([s_4_significant, s_24_significant, s_168_significant], set_labels=('4h', '24h', '168h'))
+#venn = venn3([t_4_significant, t_24_significant, t_168_significant], set_labels=('4h', '24h', '168h'))
 #venn = venn2([all_s, all_t], set_labels=('S ganglion', 'T ganglion'))
-venn = venn3([all_s, all_t, christof_data_set], set_labels=('S ganglion', 'T ganglion', 'Christof data'))
+# venn = venn3([all_s, all_t, christof_data_set], set_labels=('S ganglion', 'T ganglion', 'Christof data'))
 
-common_trfs = all_s & all_t & christof_data_set
-sandt = all_s & all_t
-sandc = all_s & christof_data_set
-tandc = all_t & christof_data_set
-labels_for_trfs = dict()
+common_trfs = s_4_significant & s_24_significant & s_168_significant
+common_trf_labels = '' 
+four_and_twentyfour = s_4_significant & s_24_significant - common_trfs
+four_and_twentyfour_labels = ''
+twentyfour_and_168 = s_24_significant & s_168_significant - common_trfs
+twentyfour_and_168_labels = ''
+four_and_168 = s_4_significant & s_168_significant - common_trfs
+four_and_168_labels = ''
+
+#set the labels for the common trfs in the venn diagram
+for trf in common_trfs:
+    common_trf_labels += f'{trf}\n' 
+for trf in four_and_twentyfour:
+    four_and_twentyfour_labels += f'{trf}\n'
+for trf in twentyfour_and_168:
+    twentyfour_and_168_labels += f'{trf}\n'
+for trf in four_and_168:
+    four_and_168_labels += f'{trf}\n'
+
+if venn.get_label_by_id('111'):
+    venn.get_label_by_id('111').set_text(common_trf_labels)
+if venn.get_label_by_id('110'):
+    venn.get_label_by_id('110').set_text(four_and_twentyfour_labels)
+if venn.get_label_by_id('101'):
+    venn.get_label_by_id('101').set_text(four_and_168_labels)
+if venn.get_label_by_id('011'):
+    venn.get_label_by_id('011').set_text(twentyfour_and_168_labels)
+
+# common_trfs = all_s & all_t & christof_data_set
+# sandt = all_s & all_t
+# sandc = all_s & christof_data_set
+# tandc = all_t & christof_data_set
+# labels_for_trfs = dict()
 
 # Create conditions for coloring
-common_trf_labels = ''
-for trf in common_trfs:
-    # Find the corresponding rows for the TRF in both sets
-    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
-    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
-    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
+# common_trf_labels = ''
+# for trf in common_trfs:
+#     # Find the corresponding rows for the TRF in both sets
+#     s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+#     t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+#     christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
 
-    # Check the conditions for coloring
+#     # Check the conditions for coloring
 
-    if s_value > 0 and t_value > 0 and christof_value > 0:
-        status = 'Positive'
-    elif s_value > 0 and t_value < 0 and christof_value > 0:
-        status = 's+ t- christof+'
-    elif s_value > 0 and t_value > 0 and christof_value < 0:
-        status = 's+ t+ christof-'
-    elif s_value > 0 and t_value < 0 and christof_value < 0:
-        status = 's+ t- christof-'
-    elif s_value < 0 and t_value > 0 and christof_value > 0:
-        status = 's- t+ christof+'
-    elif s_value < 0 and t_value < 0 and christof_value > 0:
-        status = 's- t- christof+'
-    elif s_value < 0 and t_value > 0 and christof_value < 0:
-        status = 's- t+ christof-'
-    elif s_value < 0 and t_value < 0 and christof_value < 0:
-        status = 'Negative'
+#     if s_value > 0 and t_value > 0 and christof_value > 0:
+#         status = 'Positive'
+#     elif s_value > 0 and t_value < 0 and christof_value > 0:
+#         status = 's+ t- christof+'
+#     elif s_value > 0 and t_value > 0 and christof_value < 0:
+#         status = 's+ t+ christof-'
+#     elif s_value > 0 and t_value < 0 and christof_value < 0:
+#         status = 's+ t- christof-'
+#     elif s_value < 0 and t_value > 0 and christof_value > 0:
+#         status = 's- t+ christof+'
+#     elif s_value < 0 and t_value < 0 and christof_value > 0:
+#         status = 's- t- christof+'
+#     elif s_value < 0 and t_value > 0 and christof_value < 0:
+#         status = 's- t+ christof-'
+#     elif s_value < 0 and t_value < 0 and christof_value < 0:
+#         status = 'Negative'
 
-    common_trf_labels += f'{trf} ({status})\n'
-if venn.get_label_by_id('111'):  
-    venn.get_label_by_id('111').set_text(common_trf_labels)
+#     common_trf_labels += f'{trf} ({status})\n'
+# if venn.get_label_by_id('111'):  
+#     venn.get_label_by_id('111').set_text(common_trf_labels)
 
-sandt = sandt - common_trfs
-sandt_labels = ''
-for trf in sandt:
-    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
-    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
-    if s_value > 0 and t_value > 0:
-        status = 'Positive'
-    elif s_value > 0 and t_value < 0:
-        status = 's+ t-'
-    elif s_value < 0 and t_value > 0:
-        status = 's- t+'
-    elif s_value < 0 and t_value < 0:
-        status = 'Negative'
+# sandt = sandt - common_trfs
+# sandt_labels = ''
+# for trf in sandt:
+#     s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+#     t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+#     if s_value > 0 and t_value > 0:
+#         status = 'Positive'
+#     elif s_value > 0 and t_value < 0:
+#         status = 's+ t-'
+#     elif s_value < 0 and t_value > 0:
+#         status = 's- t+'
+#     elif s_value < 0 and t_value < 0:
+#         status = 'Negative'
 
-    sandt_labels += f'{trf} ({status})\n'
+#     sandt_labels += f'{trf} ({status})\n'
 
-venn.get_label_by_id('110').set_text(sandt_labels)
+# venn.get_label_by_id('110').set_text(sandt_labels)
     
-sandc = sandc - common_trfs
-sandc_labels = ''
-for trf in sandc:
-    s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
-    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
-    if s_value > 0 and christof_value > 0:
-        status = 'Positive'
-    elif s_value > 0 and christof_value < 0:
-        status = 's+ christof-'
-    elif s_value < 0 and christof_value > 0:
-        status = 's- christof+'
-    elif s_value < 0 and christof_value < 0:
-        status = 'Negative'
-    sandc_labels += f'{trf} ({status})\n'
-if venn.get_label_by_id('101'):
-    venn.get_label_by_id('101').set_text(sandc_labels)
+# sandc = sandc - common_trfs
+# sandc_labels = ''
+# for trf in sandc:
+#     s_value = all_significant_data_s.loc[all_significant_data_s['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set S
+#     christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
+#     if s_value > 0 and christof_value > 0:
+#         status = 'Positive'
+#     elif s_value > 0 and christof_value < 0:
+#         status = 's+ christof-'
+#     elif s_value < 0 and christof_value > 0:
+#         status = 's- christof+'
+#     elif s_value < 0 and christof_value < 0:
+#         status = 'Negative'
+#     sandc_labels += f'{trf} ({status})\n'
+# if venn.get_label_by_id('101'):
+#     venn.get_label_by_id('101').set_text(sandc_labels)
 
-tandc = tandc - common_trfs
-tandc_labels = ''
-for trf in tandc:
-    t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
-    christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
-    if t_value > 0 and christof_value > 0:
-        status = 'Positive'
-    elif t_value > 0 and christof_value < 0:
-        status = 't+ christof-'
-    elif t_value < 0 and christof_value > 0:
-        status = 't- christof+'
-    elif t_value < 0 and christof_value < 0:
-        status = 'Negative'
-    tandc_labels += f'{trf} ({status})\n'
+# tandc = tandc - common_trfs
+# tandc_labels = ''
+# for trf in tandc:
+#     t_value = all_significant_data_t.loc[all_significant_data_t['trf'] == trf, 'logFC'].values[0]  # LogFC value from Set T
+#     christof_value = christof_data.loc[christof_data['trf'] == trf, 'log2FoldChange'].values[0]  # LogFC value from Christof data
+#     if t_value > 0 and christof_value > 0:
+#         status = 'Positive'
+#     elif t_value > 0 and christof_value < 0:
+#         status = 't+ christof-'
+#     elif t_value < 0 and christof_value > 0:
+#         status = 't- christof+'
+#     elif t_value < 0 and christof_value < 0:
+#         status = 'Negative'
+#     tandc_labels += f'{trf} ({status})\n'
 
-if venn.get_label_by_id('011'):
-    venn.get_label_by_id('011').set_text(tandc_labels)  
+# if venn.get_label_by_id('011'):
+#     venn.get_label_by_id('011').set_text(tandc_labels)  
 
 # Adjust the font size
 for label in venn.set_labels:  # Set font size for set labels (Set 1, Set 2, Set 3)
@@ -860,12 +888,12 @@ for label in venn.set_labels:  # Set font size for set labels (Set 1, Set 2, Set
     
 for label in venn.subset_labels:  # Set font size for subset labels (numbers or elements inside circles)
     if label:
-        label.set_fontsize(4.5)  # Adjust font size for the elements   # All sets
+        label.set_fontsize(5)  # Adjust font size for the elements   # All sets
 
-plt.title('Venn Diagram of Significant miRNAs in the T Ganglion and S Ganglion and Christof Keras data')
-#plt.show()
-#plt.savefig('Venn_diagram_T_S_Christof_Keras.svg', format='svg')
-#plt.close()
+plt.title('Venn Diagram of Significant tRFs in the S ganglion')
+plt.show()
+#plt.savefig('Venn_diagram_S_ganglion_TRFs.svg')
+plt.close()
 
 
 # # #plotting the logfc vs time taken in the S ganglion
